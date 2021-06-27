@@ -8,9 +8,7 @@ def json_default():
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
-    status = models.CharField(max_length=50, null=True)
-    photo = models.JSONField(default=json_default, null=True)
-    subscriptions = models.ManyToManyField(User, related_name='subscriptions')
+    excel = models.FileField(null=True)
 
     def __str__(self):
         return f'{self.user}({self.id})'

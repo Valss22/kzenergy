@@ -5,6 +5,8 @@ import django_heroku
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 SECRET_KEY = 'django-insecure-^yk0a#!!l^ozzxqn_nk#pa2gji&r=502auurnh5zd605@d@2ln'
 
 ACCESS_SECRET_KEY = '+gs88jj41i#v(##0^+v)$xmvfoo(cazi))l-7&e9w32-n3j(bw'
@@ -33,7 +35,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://deger4beger.github.io"
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -116,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -126,7 +126,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
