@@ -3,6 +3,10 @@ from pathlib import Path
 
 import django_heroku
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +33,7 @@ INSTALLED_APPS = [
     'backend',
     'rest_framework',
     'corsheaders',
+    'cloudinary',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -146,3 +151,9 @@ django_heroku.settings(locals())
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+cloudinary.config(
+    cloud_name="dmh0ekjaw",
+    api_key="963345615946785",
+    api_secret="JqFaq0KIFuk6rx-Z8eJSK-Gfpgc",
+)
