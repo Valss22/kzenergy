@@ -18,8 +18,7 @@ ACCESS_SECRET_KEY = '+gs88jj41i#v(##0^+v)$xmvfoo(cazi))l-7&e9w32-n3j(bw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://localhost:3000',
-                 'https://deger4beger.github.io']
+ALLOWED_HOSTS = ['http://localhost:3000']
 
 # Application definition
 
