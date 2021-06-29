@@ -3,6 +3,8 @@ import jwt
 from django.core.management.utils import get_random_secret_key
 from rest_framework import status
 from rest_framework.response import Response
+
+from backend.decoding import parse_id_token
 from kzenergy import settings
 from backend.models import *
 
@@ -10,8 +12,7 @@ from backend.models import *
 class AuthToken:
     def __init__(self, payload_access, request):
         if 'token' in request.data.keys():
-            email = jwt.decode(request.data['token'],
-                               settings.ACCESS_SECRET_KEY, algorithms='HS256')
+            email = parse_id_token(request.data['token'])['email']
         else:
             email = request.data['email']
 
@@ -28,8 +29,8 @@ class AuthToken:
 class UserData:
     def __init__(self, request):
         if 'token' in request.data.keys():
-            email = jwt.decode(request.data['token'],
-                               settings.ACCESS_SECRET_KEY, algorithms='HS256')
+            email = parse_id_token(request.data['token'])['email']
+            print(email)
             password = get_random_secret_key()
         else:
             email = request.data['email']
