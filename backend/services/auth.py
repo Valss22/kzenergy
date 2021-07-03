@@ -58,5 +58,5 @@ def login(request):
         token = AuthToken(user.payload, request)
         return token.response
     except User.DoesNotExist:
-        return create_user(user, request)
+        return Response({'error': 'Auth failed'})
 
