@@ -58,5 +58,5 @@ def login(request):
         token = AuthToken(user.payload, request)
         return token.response
     except User.DoesNotExist:
-        return Response({'error': 'Auth failed'})
+        return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
 
