@@ -1,21 +1,14 @@
 import time
 import jwt
-from django.core.management.utils import get_random_secret_key
 from rest_framework import status
 from rest_framework.response import Response
-
-from backend.decoding import parse_id_token
 from kzenergy import settings
 from backend.models import *
 
 
 class AuthToken:
     def __init__(self, payload_access, request):
-        if 'token' in request.data.keys():
-            email = parse_id_token(request.data['token'])['email']
-        else:
-            email = request.data['email']
-
+        email = request.data['email']
         self.access = jwt.encode(payload_access,
                                  settings.ACCESS_SECRET_KEY, algorithm='HS256')
         self.response = Response()
@@ -28,27 +21,20 @@ class AuthToken:
 
 class UserData:
     def __init__(self, request):
-        if 'token' in request.data.keys():
-            email = parse_id_token(request.data['token'])['email']
-            print(email)
-            password = get_random_secret_key()
-        else:
-            email = request.data['email']
-            password = request.data['password']
-
-        self.email = email
-        self.password = password
+        self.email = request.data['email']
+        self.password = request.data['password']
+        if 'fullName' and 'role' in request.data.keys():
+            self.fullName = request.data['fullName']
+            self.role = request.data['role']
         self.payload = {
-            'email': email,
+            'email': self.email,
             'exp': time.time() + 86400
         }
 
 
 def create_user(user: UserData, request) -> Response:
-    ind = user.email.find('@')
-    username = user.email[:ind]
-    userObj = User.objects.create(username=username, email=user.email,
-                                  password=user.password)
+    userObj = User.objects.create(full_name=user.fullName, email=user.email,
+                                  password=user.password, role=user.role)
     userObj.save()
     UserProfile.objects.create(user=userObj)
     token = AuthToken(user.payload, request)
@@ -67,17 +53,10 @@ def sign_in(request):
 
 def login(request):
     user = UserData(request)
-    if 'token' in request.data.keys():
-        try:
-            User.objects.get(email=user.email)
-            token = AuthToken(user.payload, request)
-            return token.response
-        except User.DoesNotExist:
-            return create_user(user, request)
     try:
-        User.objects.get(email=user.email, password=user.password)
+        User.objects.get(email=user.email)
         token = AuthToken(user.payload, request)
         return token.response
     except User.DoesNotExist:
-        return Response({'error': 'Auth failed'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return create_user(user, request)
+
