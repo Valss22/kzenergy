@@ -34,8 +34,8 @@ class UserData:
 
 
 def create_user(user: UserData, request) -> Response:
-    validate_full_name(user.fullName)
-    validate_role(user.role)
+    if not validate_role(user.role):
+        return Response({'error': f'{user.role} is not a exists role'}, status.HTTP_400_BAD_REQUEST)
     userObj = User.objects.create(full_name=user.fullName, email=user.email,
                                   password=user.password, role=user.role)
     userObj.save()

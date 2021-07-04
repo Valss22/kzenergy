@@ -9,6 +9,9 @@ class User(models.Model):
     role = models.CharField(max_length=100, null=True)
     password = models.CharField(max_length=128, null=True)
 
+    def __str__(self):
+        return f'{self.full_name}({self.email})'
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE, null=True)
