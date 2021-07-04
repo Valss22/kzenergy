@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
-
+import bcrypt
 import django_heroku
-
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,6 +14,8 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-^yk0a#!!l^ozzxqn_nk#pa2gji&r=502auurnh5zd605@d@2ln'
 
 ACCESS_SECRET_KEY = '+gs88jj41i#v(##0^+v)$xmvfoo(cazi))l-7&e9w32-n3j(bw'
+
+SALT = b'$2b$12$7J13G4g/tzi1Kh7C2PrdaO'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

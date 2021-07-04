@@ -1,9 +1,9 @@
 import time
 import jwt
-from rest_framework import status
-from rest_framework.response import Response
+import bcrypt
 from kzenergy import settings
 from backend.models import *
+from kzenergy.settings import SALT
 
 
 class AuthToken:
@@ -22,7 +22,8 @@ class AuthToken:
 class UserData:
     def __init__(self, request):
         self.email = request.data['email']
-        self.password = request.data['password']
+        hached = bcrypt.hashpw(request.data['password'].encode(), SALT)
+        self.password = hached
         if 'fullName' and 'role' in request.data.keys():
             self.fullName = request.data['fullName']
             self.role = request.data['role']
@@ -33,6 +34,8 @@ class UserData:
 
 
 def create_user(user: UserData, request) -> Response:
+    validate_full_name(user.fullName)
+    validate_role(user.role)
     userObj = User.objects.create(full_name=user.fullName, email=user.email,
                                   password=user.password, role=user.role)
     userObj.save()
@@ -45,8 +48,7 @@ def sign_in(request):
     user = UserData(request)
     try:
         User.objects.get(email=user.email)
-        return Response({'error': 'User already exist'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'User already exist'}, status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
         return create_user(user, request)
 
@@ -54,9 +56,12 @@ def sign_in(request):
 def login(request):
     user = UserData(request)
     try:
-        User.objects.get(email=user.email)
-        token = AuthToken(user.payload, request)
-        return token.response
+        hashed_pass = User.objects.get(email=request.data['email']).password[2:-1].encode()
+        current_pass = request.data['password'].encode()
+
+        if bcrypt.checkpw(current_pass, hashed_pass):
+            token = AuthToken(user.payload, request)
+            return token.response
+        return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
         return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
-
