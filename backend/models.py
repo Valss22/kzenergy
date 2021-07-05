@@ -33,5 +33,5 @@ class Compressor(models.Model):
     gasConsumptionVolume = models.IntegerField(null=True)
     volumeOfInjectedGas = models.IntegerField(null=True)
     workingHours = models.IntegerField(null=True)
-    gasComposition = models.JSONField(null=True)
+    gasComposition = models.OneToOneField(GasCompositionCompressor, on_delete=models.CASCADE, null=True)
     wasteGases = models.IntegerField(null=True)

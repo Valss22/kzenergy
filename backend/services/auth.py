@@ -18,10 +18,11 @@ class AuthResponce:
         self.response.data = {
             'id': User.objects.get(email=email).id,
             'access': self.access,
-            'email': email,
-            'role': request.data['role'],
-            'fullName': request.data['fullName']
+            'email': email
         }
+        if 'role' and 'fullName' in request.data.keys():
+            self.response.data.update({'role': request.data['role'],
+                                       'fullName': request.data['fullName']})
 
 
 class UserData:
