@@ -1,8 +1,7 @@
 from rest_framework.views import APIView
-
-from backend.serializers import UserProfileSerializer
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from backend.serializers import *
 from backend.services.auth import *
-from rest_framework import viewsets
 
 
 class SignInView(APIView):
@@ -17,7 +16,14 @@ class LoginView(APIView):
         return login(request)
 
 
-class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
+class UserProfileViewSet(ReadOnlyModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
+
+class CompressorView(APIView):
+
+    def get(self, request):
+        obj = Compressor.objects.first()
+        serializer = CompressorSerializer(obj)
+        return Response(serializer.data)

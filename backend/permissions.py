@@ -1,7 +1,6 @@
 import jwt
 from rest_framework.permissions import BasePermission
-
-from social_network import settings
+from kzenergy import settings
 
 
 class IsAuth(BasePermission):
@@ -12,3 +11,4 @@ class IsAuth(BasePermission):
             return True
         except jwt.ExpiredSignatureError:
             return False
+

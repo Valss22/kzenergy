@@ -1,12 +1,15 @@
 import time
 import jwt
 import bcrypt
+from rest_framework import status
+from rest_framework.response import Response
+
 from kzenergy import settings
 from backend.models import *
 from kzenergy.settings import SALT
 
 
-class AuthToken:
+class AuthResponce:
     def __init__(self, payload_access, request):
         email = request.data['email']
         self.access = jwt.encode(payload_access,
@@ -16,6 +19,8 @@ class AuthToken:
             'id': User.objects.get(email=email).id,
             'access': self.access,
             'email': email,
+            'role': request.data['role'],
+            'fullName': request.data['fullName']
         }
 
 
@@ -36,12 +41,12 @@ class UserData:
 def create_user(user: UserData, request) -> Response:
     if not validate_role(user.role):
         return Response({'error': f'{user.role} is not a exists role'}, status.HTTP_400_BAD_REQUEST)
-    userObj = User.objects.create(full_name=user.fullName, email=user.email,
+    userObj = User.objects.create(fullName=user.fullName, email=user.email,
                                   password=user.password, role=user.role)
     userObj.save()
     UserProfile.objects.create(user=userObj)
-    token = AuthToken(user.payload, request)
-    return token.response
+    authResponceInst = AuthResponce(user.payload, request)
+    return authResponceInst.response
 
 
 def sign_in(request):
@@ -60,8 +65,8 @@ def login(request):
         current_pass = request.data['password'].encode()
 
         if bcrypt.checkpw(current_pass, hashed_pass):
-            token = AuthToken(user.payload, request)
-            return token.response
+            authResponceInst = AuthResponce(user.payload, request)
+            return authResponceInst.response
         return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
         return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
