@@ -23,6 +23,10 @@ class AuthResponce:
         if 'role' and 'fullName' in request.data.keys():
             self.response.data.update({'role': request.data['role'],
                                        'fullName': request.data['fullName']})
+        else:
+            user = User.objects.get(email=email)
+            d = {'role': user.role, 'fullName': user.fullName}
+            self.response.data.update(d)
 
 
 class UserData:
