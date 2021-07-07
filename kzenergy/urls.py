@@ -14,7 +14,8 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('user/register/', SignInView.as_view()),
                   path('user/login/', LoginView.as_view()),
-                  path('get/', CompressorView.as_view()),
+                  path('compressor/', CompressorView.as_view()),
+                  path('compressor/create/', CreateCompressorView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls

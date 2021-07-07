@@ -1,5 +1,6 @@
 import jwt
 from rest_framework.permissions import BasePermission
+from backend.models import Compressor
 from kzenergy import settings
 
 
@@ -11,4 +12,12 @@ class IsAuth(BasePermission):
             return True
         except jwt.ExpiredSignatureError:
             return False
+
+
+class IsCreated(BasePermission):
+
+    def has_permission(self, request, view) -> bool:
+        if len(Compressor.objects.all()) == 0:
+            return True
+
 

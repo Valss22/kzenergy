@@ -14,4 +14,4 @@ def parse_id_token(token: str) -> dict:
 
 
 def parse_date(date: str) -> str:
-    return date.split('+')[0]
+    return date.split('.')[0][:-3]

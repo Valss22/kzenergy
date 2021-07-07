@@ -1,7 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
+
+from backend.permissions import IsCreated
 from backend.serializers import *
 from backend.services.auth import *
+from backend.services.compressor import create_compressor
 
 
 class SignInView(APIView):
@@ -26,4 +29,11 @@ class CompressorView(APIView):
     def get(self, request):
         obj = Compressor.objects.first()
         serializer = CompressorSerializer(obj)
-        return Response(serializer.data)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class CreateCompressorView(APIView):
+    permission_classes = [IsCreated]
+
+    def post(self, request):
+        return create_compressor(request)
