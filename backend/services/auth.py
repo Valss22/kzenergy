@@ -43,7 +43,7 @@ class UserData:
             self.role = request.data['role']
         self.payload_access = {
             'email': self.email,
-            'exp': time.time() + 86400
+            'exp': time.time() + 15
         }
         # self.payload_refresh = {
         #     'email': self.email,
@@ -70,7 +70,7 @@ def sign_in(request):
     except User.DoesNotExist:
         if request.data['identificationKey'] == settings.IDENTIFICATION_KEY:
             return create_user(user, request)
-        return Response({'error': 'Register failed'}, status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Registration failed'}, status.HTTP_400_BAD_REQUEST)
 
 
 def login(request):
@@ -78,7 +78,6 @@ def login(request):
     try:
         hashed_pass = User.objects.get(email=request.data['email']).password[2:-1].encode()
         current_pass = request.data['password'].encode()
-
         if bcrypt.checkpw(current_pass, hashed_pass):
             authResponce = AuthResponce(user.payload_access, request)
             return authResponce.response
