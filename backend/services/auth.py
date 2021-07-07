@@ -68,7 +68,7 @@ def sign_in(request):
         User.objects.get(email=user.email)
         return Response({'error': 'User already exist'}, status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
-        if request['identificationKey'] == settings.IDENTIFICATION_KEY:
+        if request.data['identificationKey'] == settings.IDENTIFICATION_KEY:
             return create_user(user, request)
         return Response({'error': 'Register failed'}, status.HTTP_400_BAD_REQUEST)
 
