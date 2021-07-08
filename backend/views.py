@@ -44,25 +44,6 @@ class FacilityView(APIView):
         serializer = cls.model_serializer(obj)
         return Response(serializer.data, status.HTTP_200_OK)
 
-
-class GasCompositionViewSet(ReadOnlyModelViewSet):
-    queryset = GasComposition.objects.all()
-    serializer_class = GasCompositionSerializer
-
-
-# class CreateCompressorView(APIView):
-#     permission_classes = [IsCreated]
-#     model = Compressor
-#
-#     def post(self, request):
-#         return create_compressor(request)
-
-
-class CreateFacilityView(APIView):
-    permission_classes = [IsAuth, IsCreated]
-    model = None
-    model_serializer = None
-
     @classmethod
     def post(cls, request):
         path = request.get_full_path()
@@ -78,3 +59,38 @@ class CreateFacilityView(APIView):
             cls.model_serializer = BoilerSerializer
 
         return create_facility(request, path, cls.model, cls.model_serializer)
+
+
+class GasCompositionViewSet(ReadOnlyModelViewSet):
+    queryset = GasComposition.objects.all()
+    serializer_class = GasCompositionSerializer
+
+
+# class CreateCompressorView(APIView):
+#     permission_classes = [IsCreated]
+#     model = Compressor
+#
+#     def post(self, request):
+#         return create_compressor(request)
+
+
+# class CreateFacilityView(APIView):
+#     permission_classes = [IsAuth, IsCreated]
+#     model = None
+#     model_serializer = None
+#
+#     @classmethod
+#     def post(cls, request):
+#         path = request.get_full_path()
+#
+#         if path == '/object/compressor/':
+#             cls.model = Compressor
+#             cls.model_serializer = CompressorSerializer
+#         elif path == '/object/powerplant/':
+#             cls.model = PowerPlant
+#             cls.model_serializer = PowerPlantSerializer
+#         else:
+#             cls.model = Boiler
+#             cls.model_serializer = BoilerSerializer
+#
+#         return create_facility(request, path, cls.model, cls.model_serializer)
