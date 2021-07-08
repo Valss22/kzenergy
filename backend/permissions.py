@@ -10,13 +10,17 @@ class IsAuth(BasePermission):
             token = request.headers['Authorization'].split(' ')[1]
             jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
             return True
-        except:
+        except:  # TODO отрегулировать перехват
             return False
 
 
 class IsCreated(BasePermission):
 
     def has_permission(self, request, view) -> bool:
+
+        if request.method == 'GET':
+            return True
+
         path = request.get_full_path()
 
         if path == '/object/compressor/':
