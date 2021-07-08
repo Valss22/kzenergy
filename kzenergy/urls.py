@@ -22,8 +22,8 @@ urlpatterns = [
                   path('object/compressor/', FacilityView.as_view()),
                   path('object/powerplant/', FacilityView.as_view()),
                   path('object/boiler/', FacilityView.as_view()),
-                  path('compressor/create/', CreateCompressorView.as_view()),
-                  path('powerPlant/', FacilityView.as_view()),
+                  path('compressor/create/', CreateFacilityView.as_view()),
+                  path('boiler/create/', CreateFacilityView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

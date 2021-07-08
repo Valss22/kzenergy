@@ -43,7 +43,7 @@ class UserData:
             self.role = request.data['role']
         self.payload_access = {
             'email': self.email,
-            'exp': time.time() + 15
+            'exp': time.time() + 30
         }
         # self.payload_refresh = {
         #     'email': self.email,

@@ -1,6 +1,6 @@
 import jwt
 from rest_framework.permissions import BasePermission
-from backend.models import Compressor
+from backend.models import Compressor, PowerPlant, Boiler
 from kzenergy import settings
 
 
@@ -17,7 +17,14 @@ class IsAuth(BasePermission):
 class IsCreated(BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if len(view.model.objects.all()) == 0:
+        path = request.get_full_path()
+
+        if path == '/object/compressor/':
+            model = Compressor
+        elif path == '/object/powerplant/':
+            model = PowerPlant
+        else:
+            model = Boiler
+
+        if len(model.objects.all()) == 0:
             return True
-
-
