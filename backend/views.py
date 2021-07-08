@@ -21,7 +21,7 @@ class LoginView(APIView):
 
 
 class FacilityView(APIView):
-    permission_classes = [IsAuth]
+    permission_classes = [IsAuth, IsCreated]
 
     model = None
     model_serializer = None
