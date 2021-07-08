@@ -17,7 +17,7 @@ class IsAuth(BasePermission):
 class IsCreated(BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if len(Compressor.objects.all()) == 0:
+        if len(view.model.objects.all()) == 0:
             return True
 
 

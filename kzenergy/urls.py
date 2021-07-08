@@ -8,14 +8,23 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 router = SimpleRouter()
-router.register(r'user/profile', UserProfileViewSet)
+
+router.register(r'gasComposition', GasCompositionViewSet)
+
+FacilityView.model = Compressor
+FacilityView.model_serializer = CompressorSerializer
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('user/register/', SignInView.as_view()),
                   path('user/login/', LoginView.as_view()),
-                  path('compressor/', CompressorView.as_view()),
+                  # path('compressor/', CompressorView.as_view()),
+                  path('object/compressor/', FacilityView.as_view()),
+                  path('object/powerplant/', FacilityView.as_view()),
+                  path('object/boiler/', FacilityView.as_view()),
                   path('compressor/create/', CreateCompressorView.as_view()),
+                  path('powerPlant/', FacilityView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 urlpatterns += router.urls
