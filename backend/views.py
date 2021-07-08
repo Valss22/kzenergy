@@ -21,7 +21,7 @@ class LoginView(APIView):
 
 
 class FacilityView(APIView):
-    permission_classes = [IsAuth, IsCreated]
+    permission_classes = [IsAuth]  # TODO исправить мидл для гет запроса
 
     model = None
     model_serializer = None
@@ -64,7 +64,6 @@ class FacilityView(APIView):
 class GasCompositionViewSet(ReadOnlyModelViewSet):
     queryset = GasComposition.objects.all()
     serializer_class = GasCompositionSerializer
-
 
 # class CreateCompressorView(APIView):
 #     permission_classes = [IsCreated]

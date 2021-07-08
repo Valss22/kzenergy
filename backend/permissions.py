@@ -10,7 +10,7 @@ class IsAuth(BasePermission):
             token = request.headers['Authorization'].split(' ')[1]
             jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
             return True
-        except jwt.ExpiredSignatureError:
+        except:
             return False
 
 
