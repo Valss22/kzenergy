@@ -18,7 +18,6 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('user/register/', SignInView.as_view()),
                   path('user/login/', LoginView.as_view()),
-                  # path('compressor/', CompressorView.as_view()),
                   path('object/compressor/', FacilityView.as_view()),
                   path('object/powerplant/', FacilityView.as_view()),
                   path('object/boiler/', FacilityView.as_view()),

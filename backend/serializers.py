@@ -9,10 +9,14 @@ class UserProfileSerializer(ModelSerializer):
         fields = ('excel',)
 
 
-class CompressorSerializer(ModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
-        model = Compressor
-        exclude = ('gasComposition', 'wasteGases')
+        model = User
+        fields = ('fullName',)
+
+
+class FacilitySerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     def to_representation(self, data):
         data = super().to_representation(data)
@@ -20,13 +24,19 @@ class CompressorSerializer(ModelSerializer):
         return data
 
 
-class PowerPlantSerializer(ModelSerializer):
+class CompressorSerializer(FacilitySerializer):
+    class Meta:
+        model = Compressor
+        exclude = ('gasComposition', 'wasteGases')
+
+
+class PowerPlantSerializer(FacilitySerializer):
     class Meta:
         model = PowerPlant
         exclude = ('actualPower', 'gasComposition')
 
 
-class BoilerSerializer(ModelSerializer):
+class BoilerSerializer(FacilitySerializer):
     class Meta:
         model = Boiler
         fields = ('id', 'date', 'user', 'gasConsumptionVolume',

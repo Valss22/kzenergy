@@ -4,7 +4,6 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from backend.permissions import IsCreated, IsAuth
 from backend.serializers import *
 from backend.services.auth import *
-from backend.services.compressor import create_compressor
 from backend.services.facility import create_facility, FacilityRequest
 
 
