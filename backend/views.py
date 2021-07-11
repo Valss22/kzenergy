@@ -40,11 +40,6 @@ class FacilityView(APIView):
         return create_facility(request, path, cls.model, cls.model_serializer)
 
 
-# class GasCompositionViewSet(ReadOnlyModelViewSet):
-#     queryset = GasComposition.objects.all()
-#     serializer_class = GasCompositionSerializer
-
-
 class GasCompositionView(APIView):
     permission_classes = [IsAuth]
 

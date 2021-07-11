@@ -32,3 +32,5 @@ class IsCreated(BasePermission):
 
         if len(model.objects.all()) == 0:
             return True
+
+
