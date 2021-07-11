@@ -32,29 +32,29 @@ class UserProfile(models.Model):
 
 class GasComposition(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    # date = models.DateTimeField(default=datetime.datetime.now(), null=True)
-    date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
-    facilityName = models.CharField(max_length=10, null=True)
+    date = models.CharField(max_length=50, null=True)
+    density = models.FloatField(help_text='плотность газа', null=True)
+    nitrogen = models.FloatField(help_text='% масс N', null=True)
+    sulfur = models.FloatField(help_text='% масс S', null=True)
+    carbon = models.FloatField(help_text='% масс C', null=True)
+    gasName = models.CharField(max_length=50, null=True)
 
     def __str__(self):
-        return f'{self.facilityName}({self.id})'
+        return f'{self.gasName}({self.id})'
 
 
 class Compressor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    # date = models.DateTimeField(default=datetime.datetime.now(), null=True)
     date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     volumeOfInjectedGas = models.FloatField(help_text='тыс. м3', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(GasComposition,
                                           help_text='г/с', on_delete=models.CASCADE, null=True)
-    wasteGases = models.FloatField(help_text='г/с', null=True)
 
 
 class PowerPlant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    # date = models.DateTimeField(default=datetime.datetime.now(), null=True)
     date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     generatedElectricity = models.FloatField(help_text='МВт*ч', null=True)
@@ -66,7 +66,6 @@ class PowerPlant(models.Model):
 
 class Boiler(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    # date = models.DateTimeField(default=datetime.datetime.now(), null=True)
     date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     steamVolume = models.FloatField(help_text='т', null=True)
@@ -74,7 +73,6 @@ class Boiler(models.Model):
     gasComposition = models.OneToOneField(GasComposition,
                                           help_text='г/с', on_delete=models.CASCADE, null=True)
     actualPower = models.FloatField(help_text='МВт', null=True)
-    wasteGases = models.FloatField(help_text='г/с', null=True)
     EnthalpySteam = models.FloatField(help_text='кДж/кг', null=True)
     EnthalpyWater = models.FloatField(help_text='кДж/кг', null=True)
     LowerHeatCombustion = models.FloatField(help_text='ТГ, кДж/м3', null=True)

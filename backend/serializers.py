@@ -27,7 +27,7 @@ class FacilitySerializer(ModelSerializer):
 class CompressorSerializer(FacilitySerializer):
     class Meta:
         model = Compressor
-        exclude = ('gasComposition', 'wasteGases')
+        exclude = ('gasComposition',)
 
 
 class PowerPlantSerializer(FacilitySerializer):
@@ -43,12 +43,12 @@ class BoilerSerializer(FacilitySerializer):
                   'steamVolume', 'workingHours')
 
 
-class GasCompositionSerializer(ModelSerializer):
+class GasCompositionSerializer(FacilitySerializer):
     class Meta:
         model = GasComposition
         fields = '__all__'
 
-    def to_representation(self, data):
-        data = super().to_representation(data)
-        data['date'] = parse_date(data['date'], 'GET-LIST')
-        return data
+    # def to_representation(self, data):
+    #     data = super().to_representation(data)
+    #     data['date'] = parse_date(data['date'], 'GET-LIST')
+    #     return data

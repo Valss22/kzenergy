@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from backend.models import GasComposition, Compressor, PowerPlant, Boiler, User
 from backend.serializers import CompressorSerializer, PowerPlantSerializer, BoilerSerializer
+from backend.services.gas_composition import get_gas_name
 from kzenergy import settings
 
 
@@ -21,14 +22,15 @@ class FacilityRequest:
 
 
 def create_facility(request, path, model, model_serializer):
-    facility_name = path.split('/')[2]
-    gasComposition = GasComposition.objects.get_or_create(facilityName=facility_name)[0]
+    facilityName = path.split('/')[2]
+    gasName = get_gas_name(facilityName)
+    gasComposition = GasComposition.objects.get_or_create(gasName=gasName)[0]
     facility = model(**request.data)
     facility.gasComposition = gasComposition
     token = request.headers['Authorization'].split(' ')[1]
-    data_token = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-    current_user = User.objects.get(email=data_token['email'])
-    facility.user = current_user
+    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
+    currentUser = User.objects.get(email=dataToken['email'])
+    facility.user = currentUser
     gasComposition.save()
     facility.save()
     obj = model.objects.first()

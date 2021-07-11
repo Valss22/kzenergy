@@ -9,10 +9,6 @@ from django.conf.urls.static import static
 
 router = SimpleRouter()
 
-router.register(r'gasComposition', GasCompositionViewSet)
-
-FacilityView.model = Compressor
-FacilityView.model_serializer = CompressorSerializer
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -21,6 +17,8 @@ urlpatterns = [
                   path('object/compressor/', FacilityView.as_view()),
                   path('object/powerplant/', FacilityView.as_view()),
                   path('object/boiler/', FacilityView.as_view()),
+                  path('object/boiler/', FacilityView.as_view()),
+                  path('chemical/gas/', GasCompositionView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -5,6 +5,7 @@ from backend.permissions import IsCreated, IsAuth
 from backend.serializers import *
 from backend.services.auth import *
 from backend.services.facility import create_facility, FacilityRequest
+from backend.services.gas_composition import create_gas_composition
 
 
 class SignInView(APIView):
@@ -20,7 +21,7 @@ class LoginView(APIView):
 
 
 class FacilityView(APIView):
-    permission_classes = [IsAuth, IsCreated]
+    # permission_classes = [IsAuth, IsCreated]
 
     model = None
     model_serializer = None
@@ -39,7 +40,19 @@ class FacilityView(APIView):
         return create_facility(request, path, cls.model, cls.model_serializer)
 
 
-class GasCompositionViewSet(ReadOnlyModelViewSet):
-    queryset = GasComposition.objects.all()
-    serializer_class = GasCompositionSerializer
+# class GasCompositionViewSet(ReadOnlyModelViewSet):
+#     queryset = GasComposition.objects.all()
+#     serializer_class = GasCompositionSerializer
 
+
+class GasCompositionView(APIView):
+    permission_classes = [IsAuth]
+
+    def get(self, request):
+        gasName = request.query_params['gasName']
+        obj = GasComposition.objects.get(gasName=gasName)
+        serializer = GasCompositionSerializer(obj)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def post(self, request):
+        return create_gas_composition(request, GasComposition, GasCompositionSerializer)

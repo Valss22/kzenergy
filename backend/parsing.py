@@ -15,7 +15,7 @@ def parse_id_token(token: str) -> dict:
     return json.loads(decoded)
 
 
-def parse_date(date: str, variant: str = None) -> str:
-    if variant == GET_LIST:
-        return date.split('+')[0]
+def parse_date(date: str) -> str or None:
+    if date is None:
+        return date
     return date.split('.')[0][:-3]
