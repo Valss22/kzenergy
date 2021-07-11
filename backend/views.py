@@ -50,9 +50,12 @@ class GasCompositionView(APIView):
 
     def get(self, request):
         gasName = request.query_params['gasName']
-        obj = GasComposition.objects.get(gasName=gasName)
-        serializer = GasCompositionSerializer(obj)
-        return Response(serializer.data, status.HTTP_200_OK)
+        try:
+            obj = GasComposition.objects.get(gasName=gasName)
+            serializer = GasCompositionSerializer(obj)
+            return Response(serializer.data, status.HTTP_200_OK)
+        except GasComposition.DoesNotExist:
+            return Response({'date': None})
 
     def post(self, request):
         return create_gas_composition(request, GasComposition, GasCompositionSerializer)
