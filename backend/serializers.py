@@ -49,20 +49,19 @@ class BoilerSerializer(FacilitySerializer):
 
 
 class CompressorSerializer3Group(FacilitySerializer):
-    gasComposition = GasSerializer(read_only=True)
+    #gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = Compressor
         try:
             Compressor.objects.get()
-
             fields = '__all__'
         except Compressor.DoesNotExist:
-            fields = ''
+            fields = ('date',)
 
 
 class PowerPlantSerializer3Group(FacilitySerializer):
-    gasComposition = GasSerializer(read_only=True)
+    #gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = PowerPlant
@@ -71,11 +70,11 @@ class PowerPlantSerializer3Group(FacilitySerializer):
 
             fields = '__all__'
         except PowerPlant.DoesNotExist:
-            fields = ''
+            fields = ('date',)
 
 
 class BoilerSerializer3Group(FacilitySerializer):
-    gasComposition = GasSerializer(read_only=True)
+    #gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = Boiler
@@ -83,4 +82,4 @@ class BoilerSerializer3Group(FacilitySerializer):
             Boiler.objects.get()
             fields = '__all__'
         except Boiler.DoesNotExist:
-            fields = ''
+            fields = ('date',)

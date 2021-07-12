@@ -46,7 +46,7 @@ class GasCompositionView(APIView):
     def get(self, request):
         gasName = request.query_params['gasName']
 
-        return get_obj(gasName=gasName, model=GasSerializer,
+        return get_obj(gasName=gasName, model=Gas,
                        group=CHEM_WORKER,
                        modelSerializer=GasSerializer)
 
