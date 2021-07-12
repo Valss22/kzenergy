@@ -30,7 +30,7 @@ class UserProfile(models.Model):
         return f'{self.user}({self.id})'
 
 
-class GasComposition(models.Model):
+class Gas(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
     gasName = models.CharField(max_length=50, null=True)
@@ -53,8 +53,7 @@ class Compressor(models.Model):
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     volumeOfInjectedGas = models.FloatField(help_text='тыс. м3', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
-    gasComposition = models.OneToOneField(GasComposition,
-                                          help_text='г/с', on_delete=models.CASCADE, null=True)
+    gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
 
 class PowerPlant(models.Model):
@@ -63,9 +62,7 @@ class PowerPlant(models.Model):
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     generatedElectricity = models.FloatField(help_text='МВт*ч', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
-    gasComposition = models.OneToOneField(GasComposition,
-                                          help_text='г/с', on_delete=models.CASCADE, null=True)
-    actualPower = models.FloatField(help_text='МВт', null=True)
+    gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
 
 class Boiler(models.Model):
@@ -74,5 +71,4 @@ class Boiler(models.Model):
     gasConsumptionVolume = models.FloatField(help_text='тыс. м3', null=True)
     steamVolume = models.FloatField(help_text='т', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
-    gasComposition = models.OneToOneField(GasComposition,
-                                          help_text='г/с', on_delete=models.CASCADE, null=True)
+    gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)

@@ -46,13 +46,13 @@ class GasCompositionView(APIView):
     def get(self, request):
         gasName = request.query_params['gasName']
 
-        return get_obj(gasName=gasName, model=GasComposition,
+        return get_obj(gasName=gasName, model=GasSerializer,
                        group=CHEM_WORKER,
-                       modelSerializer=GasCompositionSerializer)
+                       modelSerializer=GasSerializer)
 
     def post(self, request):
-        return create_gas_composition(request, GasComposition,
-                                      GasCompositionSerializer)
+        return create_gas_composition(request, GasSerializer,
+                                      GasSerializer)
 
 
 class MiningDepartmentView(APIView):
@@ -66,8 +66,8 @@ class MiningDepartmentView(APIView):
         ppSer = PowerPlantSerializer3Group(ppObj)
         boilSer = BoilerSerializer3Group(boilObj)
 
-        gasObj = GasComposition.objects.all()
-        gasSer = GasCompositionSerializer(many=True)
+        gasObj = Gas.objects.all()
+        gasSer = GasSerializer(gasObj, many=True)
 
         return Response({'compressor': compSer.data,
                          'powerPlant': ppSer.data,

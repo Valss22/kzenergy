@@ -1,6 +1,6 @@
 import jwt
 from rest_framework.permissions import BasePermission
-from backend.models import Compressor, PowerPlant, Boiler, GasComposition
+from backend.models import Compressor, PowerPlant, Boiler, Gas
 from kzenergy import settings
 
 
@@ -40,7 +40,7 @@ class IsGasExists(BasePermission):
         if request.method == 'GET':
             return True
 
-        if GasComposition.objects.filter(gasName=request.data['gasName']).exists():
+        if Gas.objects.filter(gasName=request.data['gasName']).exists():
             return False
 
         return True

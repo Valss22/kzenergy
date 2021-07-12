@@ -24,10 +24,10 @@ class FacilitySerializer(ModelSerializer):
         return data
 
 
-class GasCompositionSerializer(ModelSerializer):
+class GasSerializer(FacilitySerializer):
     class Meta:
-        model = GasComposition
-        fields = ('gasName',)
+        model = Gas
+        fields = '__all__'
 
 
 class CompressorSerializer(FacilitySerializer):
@@ -49,7 +49,7 @@ class BoilerSerializer(FacilitySerializer):
 
 
 class CompressorSerializer3Group(FacilitySerializer):
-    gasComposition = GasCompositionSerializer(read_only=True)
+    gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = Compressor
@@ -62,7 +62,7 @@ class CompressorSerializer3Group(FacilitySerializer):
 
 
 class PowerPlantSerializer3Group(FacilitySerializer):
-    gasComposition = GasCompositionSerializer(read_only=True)
+    gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = PowerPlant
@@ -75,7 +75,7 @@ class PowerPlantSerializer3Group(FacilitySerializer):
 
 
 class BoilerSerializer3Group(FacilitySerializer):
-    gasComposition = GasCompositionSerializer(read_only=True)
+    gasComposition = GasSerializer(read_only=True)
 
     class Meta:
         model = Boiler
