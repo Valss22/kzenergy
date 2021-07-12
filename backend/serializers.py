@@ -24,6 +24,12 @@ class FacilitySerializer(ModelSerializer):
         return data
 
 
+class GasCompositionSerializer(ModelSerializer):
+    class Meta:
+        model = GasComposition
+        fields = ('gasName',)
+
+
 class CompressorSerializer(FacilitySerializer):
     class Meta:
         model = Compressor
@@ -33,22 +39,48 @@ class CompressorSerializer(FacilitySerializer):
 class PowerPlantSerializer(FacilitySerializer):
     class Meta:
         model = PowerPlant
-        exclude = ('actualPower', 'gasComposition')
+        exclude = ('gasComposition',)
 
 
 class BoilerSerializer(FacilitySerializer):
     class Meta:
         model = Boiler
-        fields = ('id', 'date', 'user', 'gasConsumptionVolume',
-                  'steamVolume', 'workingHours')
+        exclude = ('gasComposition',)
 
 
-class GasCompositionSerializer(FacilitySerializer):
+class CompressorSerializer3Group(FacilitySerializer):
+    gasComposition = GasCompositionSerializer(read_only=True)
+
     class Meta:
-        model = GasComposition
-        fields = '__all__'
+        model = Compressor
+        try:
+            Compressor.objects.get()
 
-    # def to_representation(self, data):
-    #     data = super().to_representation(data)
-    #     data['date'] = parse_date(data['date'], 'GET-LIST')
-    #     return data
+            fields = '__all__'
+        except Compressor.DoesNotExist:
+            fields = ''
+
+
+class PowerPlantSerializer3Group(FacilitySerializer):
+    gasComposition = GasCompositionSerializer(read_only=True)
+
+    class Meta:
+        model = PowerPlant
+        try:
+            PowerPlant.objects.get()
+
+            fields = '__all__'
+        except PowerPlant.DoesNotExist:
+            fields = ''
+
+
+class BoilerSerializer3Group(FacilitySerializer):
+    gasComposition = GasCompositionSerializer(read_only=True)
+
+    class Meta:
+        model = Boiler
+        try:
+            Boiler.objects.get()
+            fields = '__all__'
+        except Boiler.DoesNotExist:
+            fields = ''

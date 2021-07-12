@@ -1,11 +1,4 @@
-import jwt
-from rest_framework import status
-from rest_framework.response import Response
-
-from backend.models import User
-from kzenergy import settings
-
-import datetime
+from backend.services.common import get_obj, create_obj, CHEM_WORKER
 
 
 def get_gas_name(facility_name: str):
@@ -22,17 +15,8 @@ def create_gas_composition(request, model, model_serializer):
 
     if model.objects.filter(gasName=request.data['gasName']).exists():
         update_gas_composition(request, model)
-        obj = model.objects.get(gasName=request.data['gasName'])
-        serializer = model_serializer(obj)
-        return Response(serializer.data, status.HTTP_200_OK)
+    else:
+        create_obj(request=request, model=model, group=CHEM_WORKER)
 
-    gasComposition = model(**request.data)
-    token = request.headers['Authorization'].split(' ')[1]
-    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-    currentUser = User.objects.get(email=dataToken['email'])
-    gasComposition.user = currentUser
-    gasComposition.date = datetime.datetime.now()
-    gasComposition.save()
-    obj = model.objects.get(gasName=request.data['gasName'])
-    serializer = model_serializer(obj)
-    return Response(serializer.data, status.HTTP_200_OK)
+    return get_obj(gasName=request.data['gasName'], model=model,
+                   modelSerializer=model_serializer, group=CHEM_WORKER)

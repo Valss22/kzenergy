@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from backend.permissions import IsCreated, IsAuth
+from backend.permissions import IsCreated, IsAuth, IsGasExists
 from backend.serializers import *
 from backend.services.auth import *
+from backend.services.common import get_obj, OBJ_WORKER, CHEM_WORKER
 from backend.services.facility import create_facility, FacilityRequest
 from backend.services.gas_composition import create_gas_composition
 
@@ -21,36 +21,55 @@ class LoginView(APIView):
 
 
 class FacilityView(APIView):
-    # permission_classes = [IsAuth, IsCreated]
+    permission_classes = [IsAuth, IsCreated]
 
     model = None
-    model_serializer = None
+    modelSerializer = None
 
     @classmethod
     def get(cls, request):
         FacilityRequest(request, cls)
-        obj = cls.model.objects.first()
-        serializer = cls.model_serializer(obj)
-        return Response(serializer.data, status.HTTP_200_OK)
+        return get_obj(model=cls.model, group=OBJ_WORKER,
+                       modelSerializer=cls.modelSerializer)
 
     @classmethod
     def post(cls, request):
         path = request.get_full_path()
         FacilityRequest(request, cls)
-        return create_facility(request, path, cls.model, cls.model_serializer)
+        return create_facility(request, path,
+                               cls.model, cls.modelSerializer)
 
 
 class GasCompositionView(APIView):
-    permission_classes = [IsAuth]
+    permission_classes = [IsAuth, IsGasExists]
 
     def get(self, request):
         gasName = request.query_params['gasName']
-        try:
-            obj = GasComposition.objects.get(gasName=gasName)
-            serializer = GasCompositionSerializer(obj)
-            return Response(serializer.data, status.HTTP_200_OK)
-        except GasComposition.DoesNotExist:
-            return Response({'date': None})
+
+        return get_obj(gasName=gasName, model=GasComposition,
+                       group=CHEM_WORKER,
+                       modelSerializer=GasCompositionSerializer)
 
     def post(self, request):
-        return create_gas_composition(request, GasComposition, GasCompositionSerializer)
+        return create_gas_composition(request, GasComposition,
+                                      GasCompositionSerializer)
+
+
+class MiningDepartmentView(APIView):
+
+    def get(self, request):
+        compObj = Compressor.objects.all().first()
+        ppObj = PowerPlant.objects.all().first()
+        boilObj = Boiler.objects.all().first()
+
+        compSer = CompressorSerializer3Group(compObj)
+        ppSer = PowerPlantSerializer3Group(ppObj)
+        boilSer = BoilerSerializer3Group(boilObj)
+
+        gasObj = GasComposition.objects.all()
+        gasSer = GasCompositionSerializer(many=True)
+
+        return Response({'compressor': compSer.data,
+                         'powerPlant': ppSer.data,
+                         'boiler': boilSer.data,
+                         'gas': gasSer.data})
