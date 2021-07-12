@@ -51,8 +51,7 @@ class GasCompositionView(APIView):
                        modelSerializer=GasSerializer)
 
     def post(self, request):
-        return create_gas_composition(request, GasSerializer,
-                                      GasSerializer)
+        return create_gas_composition(request, Gas, GasSerializer)
 
 
 class MiningDepartmentView(APIView):
