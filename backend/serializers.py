@@ -24,62 +24,55 @@ class FacilitySerializer(ModelSerializer):
         return data
 
 
-class GasSerializer(FacilitySerializer):
+class GasSerializerAllField(FacilitySerializer):
     class Meta:
         model = Gas
         fields = '__all__'
 
 
-class CompressorSerializer(FacilitySerializer):
+class GasSerializerOneField(ModelSerializer):
     class Meta:
-        model = Compressor
-        exclude = ('gasComposition',)
+        model = Gas
+        fields = ('gasName',)
 
 
-class PowerPlantSerializer(FacilitySerializer):
-    class Meta:
-        model = PowerPlant
-        exclude = ('gasComposition',)
-
-
-class BoilerSerializer(FacilitySerializer):
-    class Meta:
-        model = Boiler
-        exclude = ('gasComposition',)
-
-
-class CompressorSerializer3Group(FacilitySerializer):
-    #gasComposition = GasSerializer(read_only=True)
+class CompressorSerializerAllField(FacilitySerializer):
+    gasComposition = GasSerializerOneField(read_only=True)
 
     class Meta:
         model = Compressor
-        try:
-            Compressor.objects.get()
-            fields = '__all__'
-        except Compressor.DoesNotExist:
-            fields = ('date',)
+        fields = '__all__'
 
 
-class PowerPlantSerializer3Group(FacilitySerializer):
-    #gasComposition = GasSerializer(read_only=True)
+class CompressorSerializerOneField(FacilitySerializer):
+    class Meta:
+        model = Compressor
+        fields = ('date',)
+
+
+class PowerPlantSerializerAllField(FacilitySerializer):
+    gasComposition = GasSerializerOneField(read_only=True)
 
     class Meta:
         model = PowerPlant
-        try:
-            PowerPlant.objects.get()
-
-            fields = '__all__'
-        except PowerPlant.DoesNotExist:
-            fields = ('date',)
+        fields = '__all__'
 
 
-class BoilerSerializer3Group(FacilitySerializer):
-    #gasComposition = GasSerializer(read_only=True)
+class PowerPlantSerializerOneField(FacilitySerializer):
+    class Meta:
+        model = PowerPlant
+        fields = ('date',)
+
+
+class BoilerSerializerAllField(FacilitySerializer):
+    gasComposition = GasSerializerOneField(read_only=True)
 
     class Meta:
         model = Boiler
-        try:
-            Boiler.objects.get()
-            fields = '__all__'
-        except Boiler.DoesNotExist:
-            fields = ('date',)
+        fields = '__all__'
+
+
+class BoilerSerializerOneField(FacilitySerializer):
+    class Meta:
+        model = Boiler
+        fields = ('date',)
