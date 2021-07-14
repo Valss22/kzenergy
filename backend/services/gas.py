@@ -39,7 +39,6 @@ def create_gas(request):
         currentUser = User.objects.get(email=dataToken['email'])
         obj.user = currentUser
         obj.save()
-
     try:
         obj = Gas.objects.get(gasName=request.data['gasName'])
         serializer = GasSerializerAllField(obj)

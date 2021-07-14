@@ -1,4 +1,5 @@
 import jwt
+import datetime
 from rest_framework import status
 
 from backend.models import Gas, Compressor, PowerPlant, Boiler, User
@@ -56,8 +57,9 @@ def create_facility(cls, request):
 
     gasName = get_gas_name(facilityName)
     gasComposition = Gas.objects.get_or_create(gasName=gasName)[0]
-    # TODO: создать запись для хим. лабы и записать в связанное поле только при запросе со второй группы!!!
+
     obj = cls.model(**request.data)
+    obj.date = datetime.datetime.now()
     obj.gasComposition = gasComposition
     gasComposition.save()
 
