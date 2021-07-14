@@ -40,7 +40,11 @@ class IsGasExists(BasePermission):
         if request.method == 'GET':
             return True
 
-        if Gas.objects.filter(gasName=request.data['gasName']).exists():
-            return False
-
-        return True
+        try:
+            gas = Gas.objects.get(gasName=request.data['gasName'])
+            if gas.date is not None:
+                return False
+            else:
+                return True
+        except Gas.DoesNotExist:
+            return True

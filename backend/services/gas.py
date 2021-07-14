@@ -32,8 +32,8 @@ def create_gas(request, model):
     if model.objects.filter(gasName=request.data['gasName']).exists():
         update_gas(request, model)
     else:
-        obj.date = datetime.datetime.now()
         obj = model(**request.data)
+        obj.date = datetime.datetime.now()
         token = request.headers['Authorization'].split(' ')[1]
         dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
         currentUser = User.objects.get(email=dataToken['email'])
