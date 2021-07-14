@@ -31,7 +31,7 @@ def get_summary_data() -> Response:
     except Boiler.DoesNotExist:
         boilSer = BoilerSerializerOneField(boilObj)
 
-    gasNames = [obj.gasName for obj in Gas.objects.exclude(date=None)]
+    gasNames = [obj.gasName for obj in Gas.objects.all()]
 
     gasDict = {}
 
@@ -42,7 +42,7 @@ def get_summary_data() -> Response:
             class GasSer(ModelSerializer):
                 class Meta:
                     model = Gas
-                    fields = ('date', 'gasName')
+                    fields = ('date',)
 
             gasSer = GasSer(gasObj)
             gasDict[i] = gasSer.data
@@ -51,13 +51,15 @@ def get_summary_data() -> Response:
         gasSer = GasSerializerAllField(gasObj)
         gasDict[i] = gasSer.data
 
-    gases = []
-    for value in gasDict.values():
-        gases.append(value)
+    # gases = []
+    # for value in gasDict.values():
+    #     gases.append(value)
+
+    print(gasDict)
 
     return Response({
         'compressor': compSer.data,
         'powerPlant': ppSer.data,
         'boiler': boilSer.data,
-        'gases': gases
+        'gases': gasDict,
     }, status.HTTP_200_OK)
