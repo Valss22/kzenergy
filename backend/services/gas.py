@@ -23,16 +23,16 @@ def get_gas(request, model, model_serializer):
         return Response({'date': None})
 
 
-def update_gas(request, model):
-    gasComposition = model.objects.filter(gasName=request.data['gasName'])
+def update_gas(request):
+    gasComposition = Gas.objects.filter(gasName=request.data['gasName'])
     gasComposition.update(**request.data)
 
 
-def create_gas(request, model):
-    if model.objects.filter(gasName=request.data['gasName']).exists():
-        update_gas(request, model)
+def create_gas(request):
+    if Gas.objects.filter(gasName=request.data['gasName']).exists():
+        update_gas(request)
     else:
-        obj = model(**request.data)
+        obj = Gas(**request.data)
         obj.date = datetime.datetime.now()
         token = request.headers['Authorization'].split(' ')[1]
         dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
@@ -40,4 +40,9 @@ def create_gas(request, model):
         obj.user = currentUser
         obj.save()
 
-    return get_gas(request, Gas, GasSerializerAllField)
+    try:
+        obj = Gas.objects.get(gasName=request.data['gasName'])
+        serializer = GasSerializerAllField(obj)
+        return Response(serializer.data, status.HTTP_200_OK)
+    except Gas.DoesNotExist:
+        return Response({'date': None})

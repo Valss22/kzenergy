@@ -44,7 +44,6 @@ class IsGasExists(BasePermission):
             gas = Gas.objects.get(gasName=request.data['gasName'])
             if gas.date is not None:
                 return False
-            else:
-                return True
+            return True
         except Gas.DoesNotExist:
             return True

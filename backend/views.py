@@ -42,7 +42,7 @@ class GasCompositionView(APIView):
         return get_gas(request, Gas, GasSerializerAllField)
 
     def post(self, request):
-        return create_gas(request, Gas)
+        return create_gas(request)
 
 
 class MiningDepartmentView(APIView):
