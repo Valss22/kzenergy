@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.serializers import ModelSerializer
 
 from backend.models import Compressor, PowerPlant, Boiler, Gas
 from backend.serializers import CompressorSerializerAllField, CompressorSerializerOneField, \
@@ -30,12 +31,23 @@ def get_summary_data() -> Response:
     except Boiler.DoesNotExist:
         boilSer = BoilerSerializerOneField(boilObj)
 
-    gasNames = [obj.gasName for obj in Gas.objects.all()]
+    gasNames = [obj.gasName for obj in Gas.objects.exclude(date=None)]
 
     gasDict = {}
 
     for i in gasNames:
         gasObj = Gas.objects.get(gasName=i)
+
+        if gasObj.date is None:
+            class GasSer(ModelSerializer):
+                class Meta:
+                    model = Gas
+                    fields = ('date', 'gasName')
+
+            gasSer = GasSer(gasObj)
+            gasDict[i] = gasSer.data
+            continue
+
         gasSer = GasSerializerAllField(gasObj)
         gasDict[i] = gasSer.data
 

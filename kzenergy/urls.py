@@ -19,7 +19,7 @@ urlpatterns = [
                   path('object/boiler/', FacilityView.as_view()),
                   path('object/boiler/', FacilityView.as_view()),
                   path('chemical/gas/', GasCompositionView.as_view()),
-                  path('miningdep/', MiningDepartmentView.as_view()),
+                  path('mining/', MiningDepartmentView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

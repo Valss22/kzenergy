@@ -32,7 +32,7 @@ class UserProfile(models.Model):
 
 class Gas(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    date = models.CharField(default=datetime.datetime.now(), max_length=50, null=True)
+    date = models.CharField(default=None, max_length=50, null=True)
     gasName = models.CharField(max_length=50, null=True)
     density = models.FloatField(help_text='плотность газа', null=True)
     nitrogen = models.FloatField(help_text='% масс N', null=True)
