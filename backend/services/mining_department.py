@@ -55,7 +55,8 @@ def get_summary_data() -> Response:
     # for value in gasDict.values():
     #     gases.append(value)
 
-    print(gasDict)
+    if not gasDict:
+        gasDict['sweetGas'] = {'date': None}
 
     return Response({
         'compressor': compSer.data,
