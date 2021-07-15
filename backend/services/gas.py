@@ -24,7 +24,7 @@ def get_gas(request, model, model_serializer):
 
 
 def update_gas(request):
-    obj = Gas.objects.get(gasName=request.data['gasName'])
+    obj = Gas.objects.filter(gasName=request.data['gasName'])
     obj.update(**request.data)
     gas = Gas.objects.get(gasName=request.data['gasName'])
     token = request.headers['Authorization'].split(' ')[1]
