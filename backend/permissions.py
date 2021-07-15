@@ -27,7 +27,6 @@ class IsRightRole(BasePermission):
             return True
 
 
-
 class IsCreated(BasePermission):
 
     def has_permission(self, request, view) -> bool:

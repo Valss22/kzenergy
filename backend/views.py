@@ -20,7 +20,7 @@ class LoginView(APIView):
         return login(request)
 
 
-# TODO: добавить мидлваре на роли
+# TODO: добавить мидлваре на роли, валидацию
 
 class FacilityView(APIView):
     permission_classes = [IsAuth, IsRightRole, IsCreated]
