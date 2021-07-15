@@ -17,7 +17,7 @@ ACCESS_SECRET_KEY = '+gs88jj41i#v(##0^+v)$xmvfoo(cazi))l-7&e9w32-n3j(bw'
 
 IDENTIFICATION_KEY = '@)0xs2)&by1z9b0yay_4n7y!45y2k(=zqypay%=bn&0n3pk^t8'
 
-SALT = b'$2b$12$7J13G4g/tzi1Kh7C2PrdaO'
+SALT = b'$2b$12$7J13G4g/tzi1Kh7C2PrdaO'  # TODO: сделать несколько солей на каждую из групп
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

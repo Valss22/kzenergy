@@ -1,6 +1,6 @@
 import jwt
 from rest_framework.permissions import BasePermission
-from backend.models import Compressor, PowerPlant, Boiler, Gas
+from backend.models import Compressor, PowerPlant, Boiler, Gas, User
 from kzenergy import settings
 
 
@@ -12,6 +12,20 @@ class IsAuth(BasePermission):
             return True
         except:  # TODO отрегулировать перехват
             return False
+
+
+class IsRightRole(BasePermission):
+    def has_permission(self, request, view) -> bool:
+        path = request.get_full_path()
+        roleName = path.split('/')[-2]
+
+        token = request.headers['Authorization'].split(' ')[1]
+        dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
+        currentUser = User.objects.get(email=dataToken['email'])
+
+        if roleName == currentUser.role:
+            return True
+
 
 
 class IsCreated(BasePermission):

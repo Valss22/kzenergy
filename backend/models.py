@@ -11,7 +11,7 @@ class User(models.Model):
     password = models.CharField(max_length=128, null=True)
 
     def __str__(self):
-        return f'{self.fullName}({self.email}({self.id}))'
+        return f'{self.fullName}'
 
 
 # class UserRefreshToken(models.Model):
@@ -72,3 +72,10 @@ class Boiler(models.Model):
     steamVolume = models.FloatField(help_text='т', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
+
+
+# class Formulas(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+#     date = models.CharField(default=None, max_length=50, null=True)
+#     NO2 = models.CharField(default='V*%NO2m*p', max_length=50, null=True)
+

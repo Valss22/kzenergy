@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 
-from backend.permissions import IsCreated, IsAuth, IsGasExists
+from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
 from backend.serializers import *
 from backend.services.auth import *
 from backend.services.facility import create_facility, get_facility
@@ -20,8 +20,10 @@ class LoginView(APIView):
         return login(request)
 
 
+# TODO: добавить мидлваре на роли
+
 class FacilityView(APIView):
-    permission_classes = [IsAuth, IsCreated]
+    permission_classes = [IsAuth, IsRightRole, IsCreated]
 
     model = None
     modelSerializer = None
@@ -36,7 +38,7 @@ class FacilityView(APIView):
 
 
 class GasCompositionView(APIView):
-    permission_classes = [IsAuth, IsGasExists]
+    permission_classes = [IsAuth, IsRightRole, IsGasExists]
 
     def get(self, request):
         return get_gas(request, Gas, GasSerializerAllField)
@@ -45,7 +47,8 @@ class GasCompositionView(APIView):
         return create_gas(request)
 
 
-class MiningDepartmentView(APIView):
+class MiningDepartmentView(APIView, IsRightRole):  # TODO: добавить мидлваре
+    permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_summary_data()
