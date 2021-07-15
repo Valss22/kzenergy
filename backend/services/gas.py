@@ -24,14 +24,15 @@ def get_gas(request, model, model_serializer):
 
 
 def update_gas(request):
-    obj = Gas.objects.filter(gasName=request.data['gasName'])
+    obj = Gas.objects.get(gasName=request.data['gasName'])
     obj.update(**request.data)
-    obj.date = datetime.datetime.now()
+    gas = Gas.objects.get(gasName=request.data['gasName'])
     token = request.headers['Authorization'].split(' ')[1]
     dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
     currentUser = User.objects.get(email=dataToken['email'])
-    obj.user = currentUser
-    obj.save()
+    gas.date = datetime.datetime.now()
+    gas.user = currentUser
+    gas.save()
 
 
 def create_gas(request):
