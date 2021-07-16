@@ -12,7 +12,7 @@ class UserProfileSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('fullName',)
+        fields = ('fullName', 'id')
 
 
 class FacilitySerializer(ModelSerializer):
