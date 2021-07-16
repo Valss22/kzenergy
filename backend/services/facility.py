@@ -95,4 +95,8 @@ def edit_data(cls, request) -> Response:
     obj.isEdited = True
     obj.refusalData = {'date': None}
     obj.save()
-    return Response(status=status.HTTP_200_OK)
+    obj = cls.model.objects.get()
+    serializer = cls.modelSerializer(obj)
+    return Response(serializer.data, status.HTTP_200_OK)
+
+
