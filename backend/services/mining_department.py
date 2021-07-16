@@ -60,7 +60,7 @@ def get_summary_data() -> Response:
 
     return Response({
         'compressor': compSer.data,
-        'powerPlant': ppSer.data,
+        'powerplant': ppSer.data,
         'boiler': boilSer.data,
         'gases': gasDict,
     }, status.HTTP_200_OK)

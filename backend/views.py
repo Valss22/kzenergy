@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 
 from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
-from backend.serializers import *
 from backend.services.auth import *
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
