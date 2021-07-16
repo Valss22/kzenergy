@@ -84,3 +84,10 @@ def login(request):
         return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
         return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
+
+
+def get_current_user(request) -> User:
+    token = request.headers['Authorization'].split(' ')[1]
+    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
+    currentUser = User.objects.get(email=dataToken['email'])
+    return currentUser

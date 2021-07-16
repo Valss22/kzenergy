@@ -23,40 +23,53 @@ class IsRightRole(BasePermission):
         dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
         currentUser = User.objects.get(email=dataToken['email'])
 
-        if roleName == currentUser.role:
+        if roleName == currentUser.role or currentUser.role == 'mining':
             return True
+
+
+class EnableToEdit(BasePermission):  # TODO: вынести условия и доделать мидлы
+    def has_permission(self, request, view):
+        if request.method == 'PUT':
+            path = request.get_full_path()
+
+            if path == '/object/compressor/':
+                model = Compressor
+            elif path == '/object/powerplant/':
+                model = PowerPlant
+            else:
+                model = Boiler
 
 
 class IsCreated(BasePermission):
 
     def has_permission(self, request, view) -> bool:
 
-        if request.method == 'GET':
-            return True
+        if request.method == 'POST':
+            path = request.get_full_path()
 
-        path = request.get_full_path()
+            if path == '/object/compressor/':
+                model = Compressor
+            elif path == '/object/powerplant/':
+                model = PowerPlant
+            else:
+                model = Boiler
 
-        if path == '/object/compressor/':
-            model = Compressor
-        elif path == '/object/powerplant/':
-            model = PowerPlant
-        else:
-            model = Boiler
+            if len(model.objects.all()) == 0:
+                return True
 
-        if len(model.objects.all()) == 0:
-            return True
+        return True
 
 
 class IsGasExists(BasePermission):
 
     def has_permission(self, request, view) -> bool:
-        if request.method == 'GET':
-            return True
+        if request.method == 'POST':
 
-        try:
-            gas = Gas.objects.get(gasName=request.data['gasName'])
-            if gas.date is not None:
-                return False
-            return True
-        except Gas.DoesNotExist:
-            return True
+            try:
+                gas = Gas.objects.get(gasName=request.data['gasName'])
+                if gas.date is not None:
+                    return False
+                return True
+            except Gas.DoesNotExist:
+                return True
+        return True

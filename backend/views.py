@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
 from backend.serializers import *
 from backend.services.auth import *
-from backend.services.facility import create_facility, get_facility
-from backend.services.gas import create_gas, get_gas
+from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
+from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.mining_department import get_summary_data
 
 
@@ -20,13 +20,13 @@ class LoginView(APIView):
         return login(request)
 
 
-# TODO: добавить мидлваре на роли, валидацию
+# TODO: добавить валидацию
 
 class FacilityView(APIView):
-    permission_classes = [IsAuth, IsRightRole, IsCreated]
+    permission_classes = [IsAuth, IsRightRole, IsCreated, ]
 
-    model = None
-    modelSerializer = None
+    model: models.Model
+    modelSerializer: models.Model
 
     @classmethod
     def get(cls, request):
@@ -36,18 +36,32 @@ class FacilityView(APIView):
     def post(cls, request):
         return create_facility(cls, request)
 
+    @classmethod
+    def patch(cls, request):
+        return set_refusal_data(cls, request)
+
+    @classmethod
+    def put(cls, request):
+        return edit_data(cls, request)
+
 
 class GasCompositionView(APIView):
     permission_classes = [IsAuth, IsRightRole, IsGasExists]
 
     def get(self, request):
-        return get_gas(request, Gas, GasSerializerAllField)
+        return get_gas(request)
 
     def post(self, request):
         return create_gas(request)
 
+    def patch(self, request):
+        return set_refusal_gas_data(request)
 
-class MiningDepartmentView(APIView, IsRightRole):  # TODO: добавить мидлваре
+    def put(self, request):
+        return edit_gas_data(request)
+
+
+class MiningDepartmentView(APIView):
     permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):

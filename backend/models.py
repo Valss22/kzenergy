@@ -4,6 +4,10 @@ from backend.validators import *
 import datetime
 
 
+def json_default() -> dict:
+    return {'date': None}
+
+
 class User(models.Model):
     email = models.EmailField(null=True)
     fullName = models.CharField(max_length=100, null=True)
@@ -43,6 +47,9 @@ class Gas(models.Model):
     N2OSpecificFactor = models.IntegerField(help_text='кг/ТДж', null=True)
     LowerHeatCombustion = models.FloatField(help_text='ТГ, ГДж/т', null=True)
 
+    refusalData = models.JSONField(default=json_default, null=True)
+    isEdited = models.BooleanField(default=False)
+
     def __str__(self):
         return f'{self.gasName}({self.id})'
 
@@ -55,6 +62,9 @@ class Compressor(models.Model):
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
+    refusalData = models.JSONField(default=json_default, null=True)
+    isEdited = models.BooleanField(default=False)
+
 
 class PowerPlant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -63,6 +73,9 @@ class PowerPlant(models.Model):
     generatedElectricity = models.FloatField(help_text='МВт*ч', null=True)
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
+
+    refusalData = models.JSONField(default=json_default, null=True)
+    isEdited = models.BooleanField(default=False)
 
 
 class Boiler(models.Model):
@@ -73,9 +86,10 @@ class Boiler(models.Model):
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
+    refusalData = models.JSONField(default=json_default, null=True)
+    isEdited = models.BooleanField(default=False)
 
 # class Formulas(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 #     date = models.CharField(default=None, max_length=50, null=True)
 #     NO2 = models.CharField(default='V*%NO2m*p', max_length=50, null=True)
-
