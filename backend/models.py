@@ -82,8 +82,8 @@ class Boiler(models.Model):
 
 
 class Formulas(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    date = models.CharField(default=None, max_length=50, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.CharField(default=None, max_length=50, null=True, blank=True)
     isConfirmed = models.BooleanField(default=False)
 
     NO2coef = models.FloatField(default=1)
