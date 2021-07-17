@@ -20,23 +20,46 @@ def get_summary_data() -> Response:
     boilObj = Boiler.objects.all().first()
 
     try:
-        Compressor.objects.get()
-        compSer = CompressorSerializerAllField(compObj)
-        count += 1
+        obj = Compressor.objects.get()
+        if obj.date is None:
+            class CompSer(ModelSerializer):
+                class Meta:
+                    model = Compressor
+                    fields = ('date', 'refusalData')
+            compSer = CompSer(compObj)
+        else:
+            compSer = CompressorSerializerAllField(compObj)
+            count += 1
     except Compressor.DoesNotExist:
         compSer = CompressorSerializerOneField(compObj)
 
     try:
-        PowerPlant.objects.get()
-        ppSer = PowerPlantSerializerAllField(ppObj)
-        count += 1
+        obj = PowerPlant.objects.get()
+        if obj.date is None:
+            class PPSer(ModelSerializer):
+                class Meta:
+                    model = PowerPlant
+                    fields = ('date', 'refusalData')
+
+            ppSer = PPSer(ppObj)
+        else:
+            ppSer = PowerPlantSerializerAllField(ppObj)
+            count += 1
     except PowerPlant.DoesNotExist:
         ppSer = PowerPlantSerializerOneField(ppObj)
 
     try:
-        Boiler.objects.get()
-        boilSer = BoilerSerializerAllField(boilObj)
-        count += 1
+        obj = Boiler.objects.get()
+        if obj.date is None:
+            class BoilSer(ModelSerializer):
+                class Meta:
+                    model = Boiler
+                    fields = ('date', 'refusalData')
+
+            boilSer = BoilSer(ppObj)
+        else:
+            boilSer = BoilerSerializerAllField(boilObj)
+            count += 1
     except Boiler.DoesNotExist:
         boilSer = BoilerSerializerOneField(boilObj)
 
@@ -51,7 +74,7 @@ def get_summary_data() -> Response:
             class GasSer(ModelSerializer):
                 class Meta:
                     model = Gas
-                    fields = ('date',)
+                    fields = ('date', 'refusalData')
 
             gasSer = GasSer(gasObj)
             gasDict[i] = gasSer.data
