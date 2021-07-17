@@ -83,10 +83,10 @@ def get_summary_data() -> Response:
         'gases': gasDict,
     }
 
-    isConfirmable = False
+    isConfirmable = True
 
-    if count == len(responce.data.keys()):
-        isConfirmable = True
+    if count != len(responce.data.keys()) or isConfirmed:
+        isConfirmable = False
 
     confirmData = {
         'user': user,

@@ -86,6 +86,6 @@ class FormulasSerializer(FacilitySerializer):
         model = Formulas
         fields = '__all__'
 
-    def get_NO2formula(self, instance):
+    def get_compressor(self, instance):
         V = Compressor.objects.get().gasConsumptionVolume
         return V
