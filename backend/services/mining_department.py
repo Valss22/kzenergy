@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from backend.models import Compressor, PowerPlant, Boiler, Gas, Formulas
+from backend.parsing import parse_date
 from backend.serializers import CompressorSerializerAllField, CompressorSerializerOneField, \
     PowerPlantSerializerAllField, PowerPlantSerializerOneField, BoilerSerializerAllField, BoilerSerializerOneField, \
     GasSerializerAllField
@@ -12,6 +13,8 @@ from backend.services.auth import get_current_user
 
 
 def get_summary_data() -> Response:
+    count: int = 0  # Счетчик по заполнению
+
     compObj = Compressor.objects.all().first()
     ppObj = PowerPlant.objects.all().first()
     boilObj = Boiler.objects.all().first()
@@ -19,18 +22,21 @@ def get_summary_data() -> Response:
     try:
         Compressor.objects.get()
         compSer = CompressorSerializerAllField(compObj)
+        count += 1
     except Compressor.DoesNotExist:
         compSer = CompressorSerializerOneField(compObj)
 
     try:
         PowerPlant.objects.get()
         ppSer = PowerPlantSerializerAllField(ppObj)
+        count += 1
     except PowerPlant.DoesNotExist:
         ppSer = PowerPlantSerializerOneField(ppObj)
 
     try:
         Boiler.objects.get()
         boilSer = BoilerSerializerAllField(boilObj)
+        count += 1
     except Boiler.DoesNotExist:
         boilSer = BoilerSerializerOneField(boilObj)
 
@@ -51,6 +57,7 @@ def get_summary_data() -> Response:
             gasDict[i] = gasSer.data
             continue
 
+        count += 1
         gasSer = GasSerializerAllField(gasObj)
         gasDict[i] = gasSer.data
 
@@ -63,28 +70,39 @@ def get_summary_data() -> Response:
 
     if user is not None:
         user = {'fullName': user.fullName,
-                'id': user.id},
+                'id': user.id}
 
-    confirmData = {
-        'user': user,
-        'date': date,
-        'isConfirmed': isConfirmed
-    }
+    date = parse_date(date)
 
-    return Response({
+    responce = Response()
+
+    responce.data = {
         'compressor': compSer.data,
         'powerplant': ppSer.data,
         'boiler': boilSer.data,
         'gases': gasDict,
-        'confirmData': confirmData
-    }, status.HTTP_200_OK)
+    }
+
+    isConfirmable = False
+
+    if count == len(responce.data.keys()):
+        isConfirmable = True
+
+    confirmData = {
+        'user': user,
+        'date': date,
+        'isConfirmed': isConfirmed,
+        'isConfirmable': isConfirmable
+    }
+
+    responce.data['confirmData'] = confirmData
+
+    return responce
 
 
 def sign_report(request):
     currentUser = get_current_user(request)
-
     Formulas.objects.all().update(user=currentUser,
                                   date=datetime.datetime.now(),
                                   isConfirmed=True)
-
     return get_summary_data()
