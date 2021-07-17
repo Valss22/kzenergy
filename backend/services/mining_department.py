@@ -61,9 +61,12 @@ def get_summary_data() -> Response:
     date = Formulas.objects.get().date
     isConfirmed = Formulas.objects.get().isConfirmed
 
+    if user is not None:
+        user = {'fullName': user.fullName,
+                'id': user.id},
+
     confirmData = {
-        'user': {'fullName': user.fullName,
-                 'id': user.id},
+        'user': user,
         'date': date,
         'isConfirmed': isConfirmed
     }
@@ -80,9 +83,8 @@ def get_summary_data() -> Response:
 def sign_report(request):
     currentUser = get_current_user(request)
 
-    Formulas.objects.all().update(
-        **request.data, user=currentUser,
-        date=datetime.datetime.now(), isConfirmed=True
-    )
+    Formulas.objects.all().update(user=currentUser,
+                                  date=datetime.datetime.now(),
+                                  isConfirmed=True)
 
     return get_summary_data()
