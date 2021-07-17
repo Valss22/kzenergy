@@ -1,11 +1,14 @@
+import datetime
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from backend.models import Compressor, PowerPlant, Boiler, Gas
+from backend.models import Compressor, PowerPlant, Boiler, Gas, Formulas
 from backend.serializers import CompressorSerializerAllField, CompressorSerializerOneField, \
     PowerPlantSerializerAllField, PowerPlantSerializerOneField, BoilerSerializerAllField, BoilerSerializerOneField, \
     GasSerializerAllField
+from backend.services.auth import get_current_user
 
 
 def get_summary_data() -> Response:
@@ -51,16 +54,35 @@ def get_summary_data() -> Response:
         gasSer = GasSerializerAllField(gasObj)
         gasDict[i] = gasSer.data
 
-    # gases = []
-    # for value in gasDict.values():
-    #     gases.append(value)
-
     if not gasDict:
         gasDict['sweetGas'] = {'date': None}
+
+    user = Formulas.objects.get().user
+    date = Formulas.objects.get().date
+    isConfirmed = Formulas.objects.get().isConfirmed
+
+    confirmData = {
+        'user': {'fullName': user.fullName,
+                 'id': user.id},
+        'date': date,
+        'isConfirmed': isConfirmed
+    }
 
     return Response({
         'compressor': compSer.data,
         'powerplant': ppSer.data,
         'boiler': boilSer.data,
         'gases': gasDict,
+        'confirmData': confirmData
     }, status.HTTP_200_OK)
+
+
+def sign_report(request):
+    currentUser = get_current_user(request)
+
+    Formulas.objects.all().update(
+        **request.data, user=currentUser,
+        date=datetime.datetime.now(), isConfirmed=True
+    )
+
+    return get_summary_data()

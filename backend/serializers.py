@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from backend.models import *
 from backend.parsing import parse_date
+from rest_framework import serializers
 
 
 class UserProfileSerializer(ModelSerializer):
@@ -76,3 +77,15 @@ class BoilerSerializerOneField(FacilitySerializer):
     class Meta:
         model = Boiler
         fields = ('date',)
+
+
+class FormulasSerializer(FacilitySerializer):
+    compressor = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Formulas
+        fields = '__all__'
+
+    def get_NO2formula(self, instance):
+        V = Compressor.objects.get().gasConsumptionVolume
+        return V

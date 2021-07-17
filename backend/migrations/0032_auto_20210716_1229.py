@@ -14,16 +14,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='boiler',
             name='failureData',
-            field=models.JSONField(default=backend.models.json_default, null=True),
+            field=models.JSONField(default=backend.models.refusal_data_default, null=True),
         ),
         migrations.AlterField(
             model_name='compressor',
             name='failureData',
-            field=models.JSONField(default=backend.models.json_default, null=True),
+            field=models.JSONField(default=backend.models.refusal_data_default, null=True),
         ),
         migrations.AlterField(
             model_name='powerplant',
             name='failureData',
-            field=models.JSONField(default=backend.models.json_default, null=True),
+            field=models.JSONField(default=backend.models.refusal_data_default, null=True),
         ),
     ]

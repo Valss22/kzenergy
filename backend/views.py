@@ -1,10 +1,13 @@
+import datetime
+
 from rest_framework.views import APIView
 
 from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
+from backend.serializers import FormulasSerializer
 from backend.services.auth import *
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
-from backend.services.mining_department import get_summary_data
+from backend.services.mining_department import get_summary_data, sign_report
 
 
 class SignInView(APIView):
@@ -65,3 +68,14 @@ class MiningDepartmentView(APIView):
 
     def get(self, request):
         return get_summary_data()
+
+    def patch(self, request):
+        return sign_report(request)
+
+
+class EnvironmentDepartmentView(APIView):
+
+    def get(self, request):
+        obj = Formulas.objects.get()
+        serializer = FormulasSerializer(obj)
+        return Response(serializer.data)

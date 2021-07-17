@@ -1,10 +1,9 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
 from backend.validators import *
-import datetime
 
 
-def json_default() -> dict:
+def refusal_data_default() -> dict:
     return {'date': None}
 
 
@@ -16,14 +15,6 @@ class User(models.Model):
 
     def __str__(self):
         return f'{self.fullName}'
-
-
-# class UserRefreshToken(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-#     refresh = models.TextField(null=True)
-#
-#     def __str__(self):
-#         return f'{self.user}({self.id})'
 
 
 class UserProfile(models.Model):
@@ -47,7 +38,7 @@ class Gas(models.Model):
     N2OSpecificFactor = models.IntegerField(help_text='кг/ТДж', null=True)
     LowerHeatCombustion = models.FloatField(help_text='ТГ, ГДж/т', null=True)
 
-    refusalData = models.JSONField(default=json_default, null=True)
+    refusalData = models.JSONField(default=refusal_data_default, null=True)
     isEdited = models.BooleanField(default=False)
 
     def __str__(self):
@@ -62,7 +53,7 @@ class Compressor(models.Model):
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
-    refusalData = models.JSONField(default=json_default, null=True)
+    refusalData = models.JSONField(default=refusal_data_default, null=True)
     isEdited = models.BooleanField(default=False)
 
 
@@ -74,7 +65,7 @@ class PowerPlant(models.Model):
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
-    refusalData = models.JSONField(default=json_default, null=True)
+    refusalData = models.JSONField(default=refusal_data_default, null=True)
     isEdited = models.BooleanField(default=False)
 
 
@@ -86,10 +77,20 @@ class Boiler(models.Model):
     workingHours = models.FloatField(help_text='часы', null=True)
     gasComposition = models.OneToOneField(Gas, help_text='г/с', on_delete=models.CASCADE, null=True)
 
-    refusalData = models.JSONField(default=json_default, null=True)
+    refusalData = models.JSONField(default=refusal_data_default, null=True)
     isEdited = models.BooleanField(default=False)
 
-# class Formulas(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-#     date = models.CharField(default=None, max_length=50, null=True)
-#     NO2 = models.CharField(default='V*%NO2m*p', max_length=50, null=True)
+
+class Formulas(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    date = models.CharField(default=None, max_length=50, null=True)
+    isConfirmed = models.BooleanField(default=False)
+
+    NO2coef = models.FloatField(default=1)
+    NOcoef = models.FloatField(default=1)
+    SO2coef = models.FloatField(default=0.02)
+    COcoef = models.FloatField(default=1)
+
+    CO2coef = models.FloatField(default=1)
+    CH4coef = models.FloatField(default=1)
+    N2Ocoef = models.FloatField(default=1)

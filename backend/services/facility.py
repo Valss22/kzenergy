@@ -3,7 +3,7 @@ import datetime
 from rest_framework import status
 
 from backend.models import Gas, Compressor, PowerPlant, Boiler, User
-from backend.parsing import parse_date
+
 from backend.serializers import FacilitySerializer
 from backend.services.auth import get_current_user
 from backend.services.common import get_refusal_data

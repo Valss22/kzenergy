@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gas',
             name='refusalData',
-            field=models.JSONField(default=backend.models.json_default, null=True),
+            field=models.JSONField(default=backend.models.refusal_data_default, null=True),
         ),
         migrations.AddField(
             model_name='powerplant',
