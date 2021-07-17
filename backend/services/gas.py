@@ -9,7 +9,6 @@ from backend.serializers import GasSerializerAllField
 from backend.services.auth import get_current_user
 from backend.services.common import get_refusal_data
 from backend.services.mining_department import get_summary_data
-from kzenergy import settings
 
 
 def get_gas_name(facility_name: str):
@@ -32,9 +31,7 @@ def update_gas(request):
     obj = Gas.objects.filter(gasName=gasName)
     obj.update(**request.data)
     gas = Gas.objects.get(gasName=request.data['gasName'])
-    token = request.headers['Authorization'].split(' ')[1]
-    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-    currentUser = User.objects.get(email=dataToken['email'])
+    currentUser = get_current_user(request)
     gas.date = datetime.datetime.now()
     gas.user = currentUser
     gas.save()
@@ -46,9 +43,7 @@ def create_gas(request):
     else:
         obj = Gas(**request.data)
         obj.date = datetime.datetime.now()
-        token = request.headers['Authorization'].split(' ')[1]
-        dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-        currentUser = User.objects.get(email=dataToken['email'])
+        currentUser = get_current_user(request)
         obj.user = currentUser
         obj.save()
     try:

@@ -47,7 +47,7 @@ def get_summary_data() -> Response:
     for i in gasNames:
         gasObj = Gas.objects.get(gasName=i)
 
-        if gasObj.date is None and gasObj.user is not None:
+        if gasObj.date is None:
             class GasSer(ModelSerializer):
                 class Meta:
                     model = Gas
@@ -84,6 +84,9 @@ def get_summary_data() -> Response:
     }
 
     isConfirmable = True
+
+    print(count)
+    print(len(responce.data.keys()))
 
     if count != len(responce.data.keys()) or isConfirmed:
         isConfirmable = False
