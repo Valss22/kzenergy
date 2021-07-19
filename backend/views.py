@@ -2,9 +2,11 @@ import datetime
 
 from rest_framework.views import APIView
 
+from backend.parsing import parse_number
 from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
 from backend.serializers import FormulasSerializer
 from backend.services.auth import *
+from backend.services.environment_department import get_calculated_formulas, update_formula
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.mining_department import get_summary_data, sign_report
@@ -76,6 +78,7 @@ class MiningDepartmentView(APIView):
 class EnvironmentDepartmentView(APIView):
 
     def get(self, request):
-        obj = Formulas.objects.get()
-        serializer = FormulasSerializer(obj)
-        return Response(serializer.data)
+        return get_calculated_formulas()
+
+    def patch(self, request):
+        return update_formula(request)

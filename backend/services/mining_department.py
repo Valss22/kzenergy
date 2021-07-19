@@ -1,67 +1,86 @@
 import datetime
 
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from backend.models import Compressor, PowerPlant, Boiler, Gas, Formulas
 from backend.parsing import parse_date
-from backend.serializers import CompressorSerializerAllField, CompressorSerializerOneField, \
-    PowerPlantSerializerAllField, PowerPlantSerializerOneField, BoilerSerializerAllField, BoilerSerializerOneField, \
-    GasSerializerAllField
+from backend.serializers import CompSerAllField, CompSerOneField, \
+    PPSerAllField, PPSerOneField, BoilSerAllField, BoilSerOneField, \
+    GasSerAllField, PPSerTwoField, BoilSerTwoField, CompSerTwoField
 from backend.services.auth import get_current_user
 
 
-def get_summary_data() -> Response:
-    count: int = 0  # Счетчик по заполнению
+class FacSerData:
+    count: int = 0  # Счетчик по заполненности сводного отчета
 
+    @classmethod
+    def set_fac_ser(cls, facility, fac_ser_two_field, fac_obj,
+                    fac_ser_all_field, fac_ser_one_field) -> ModelSerializer:
+        try:
+            obj = facility.objects.get()
+            if obj.date is None:
+                facSer = fac_ser_two_field(fac_obj)
+            else:
+                facSer = fac_ser_all_field(fac_obj)
+                cls.count += 1
+        except facility.DoesNotExist:
+            facSer = fac_ser_one_field(fac_obj)
+
+        return facSer
+
+
+def get_summary_data() -> Response:
     compObj = Compressor.objects.all().first()
     ppObj = PowerPlant.objects.all().first()
     boilObj = Boiler.objects.all().first()
 
-    try:
-        obj = Compressor.objects.get()
-        if obj.date is None:
-            class CompSer(ModelSerializer):
-                class Meta:
-                    model = Compressor
-                    fields = ('date', 'refusalData')
-            compSer = CompSer(compObj)
-        else:
-            compSer = CompressorSerializerAllField(compObj)
-            count += 1
-    except Compressor.DoesNotExist:
-        compSer = CompressorSerializerOneField(compObj)
+    facSerObj = FacSerData()
 
-    try:
-        obj = PowerPlant.objects.get()
-        if obj.date is None:
-            class PPSer(ModelSerializer):
-                class Meta:
-                    model = PowerPlant
-                    fields = ('date', 'refusalData')
+    compSer = facSerObj. \
+        set_fac_ser(Compressor,
+                    CompSerTwoField,
+                    compObj, CompSerAllField,
+                    CompSerOneField)
 
-            ppSer = PPSer(ppObj)
-        else:
-            ppSer = PowerPlantSerializerAllField(ppObj)
-            count += 1
-    except PowerPlant.DoesNotExist:
-        ppSer = PowerPlantSerializerOneField(ppObj)
+    ppSer = facSerObj. \
+        set_fac_ser(PowerPlant, PPSerTwoField,
+                    ppObj, PPSerAllField,
+                    PPSerOneField)
 
-    try:
-        obj = Boiler.objects.get()
-        if obj.date is None:
-            class BoilSer(ModelSerializer):
-                class Meta:
-                    model = Boiler
-                    fields = ('date', 'refusalData')
+    boilSer = facSerObj. \
+        set_fac_ser(Boiler, BoilSerTwoField,
+                    boilObj, BoilSerAllField,
+                    BoilSerOneField)
 
-            boilSer = BoilSer(ppObj)
-        else:
-            boilSer = BoilerSerializerAllField(boilObj)
-            count += 1
-    except Boiler.DoesNotExist:
-        boilSer = BoilerSerializerOneField(boilObj)
+    # try:
+    #     obj = Compressor.objects.get()
+    #     if obj.date is None:
+    #         compSer = CompSerTwoField(compObj)
+    #     else:
+    #         compSer = CompressorSerializerAllField(compObj)
+    #         count += 1
+    # except Compressor.DoesNotExist:
+    #     compSer = CompressorSerializerOneField(compObj)
+    # try:
+    #     obj = PowerPlant.objects.get()
+    #     if obj.date is None:
+    #         ppSer = PPSerTwoField(ppObj)
+    #     else:
+    #         ppSer = PowerPlantSerializerAllField(ppObj)
+    #         count += 1
+    # except PowerPlant.DoesNotExist:
+    #     ppSer = PowerPlantSerializerOneField(ppObj)
+    # try:
+    #     obj = Boiler.objects.get()
+    #     if obj.date is None:
+    #
+    #         boilSer = BoilSerTwoField(ppObj)
+    #     else:
+    #         boilSer = BoilerSerializerAllField(boilObj)
+    #         count += 1
+    # except Boiler.DoesNotExist:
+    #     boilSer = BoilerSerializerOneField(boilObj)
 
     gasNames = [obj.gasName for obj in Gas.objects.all()]
 
@@ -80,8 +99,8 @@ def get_summary_data() -> Response:
             gasDict[i] = gasSer.data
             continue
 
-        count += 1
-        gasSer = GasSerializerAllField(gasObj)
+        facSerObj.count += 1
+        gasSer = GasSerAllField(gasObj)
         gasDict[i] = gasSer.data
 
     if not gasDict:
@@ -108,10 +127,7 @@ def get_summary_data() -> Response:
 
     isConfirmable = True
 
-    print(count)
-    print(len(responce.data.keys()))
-
-    if count != len(responce.data.keys()) or isConfirmed:
+    if facSerObj.count != len(responce.data.keys()) or isConfirmed:
         isConfirmable = False
 
     confirmData = {

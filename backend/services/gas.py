@@ -1,11 +1,10 @@
 import datetime
 
-import jwt
 from rest_framework import status
 from rest_framework.response import Response
 
 from backend.models import User, Gas
-from backend.serializers import GasSerializerAllField
+from backend.serializers import GasSerAllField
 from backend.services.auth import get_current_user
 from backend.services.common import get_refusal_data
 from backend.services.mining_department import get_summary_data
@@ -20,7 +19,7 @@ def get_gas(request):
     try:
         gasName = request.query_params['gasName']
         obj = Gas.objects.get(gasName=gasName)
-        serializer = GasSerializerAllField(obj)
+        serializer = GasSerAllField(obj)
         return Response(serializer.data, status.HTTP_200_OK)
     except Gas.DoesNotExist:
         return Response({'date': None})
@@ -48,7 +47,7 @@ def create_gas(request):
         obj.save()
     try:
         obj = Gas.objects.get(gasName=request.data['gasName'])
-        serializer = GasSerializerAllField(obj)
+        serializer = GasSerAllField(obj)
         return Response(serializer.data, status.HTTP_200_OK)
     except Gas.DoesNotExist:
         return Response({'date': None})
@@ -74,5 +73,5 @@ def edit_gas_data(request):
     obj.refusalData = {'date': None}
     obj.save()
     obj = Gas.objects.get(gasName=gasName)
-    serializer = GasSerializerAllField(obj)
+    serializer = GasSerAllField(obj)
     return Response(serializer.data, status.HTTP_200_OK)

@@ -1,8 +1,6 @@
 import base64
 import json
 
-GET_LIST = 'GET-LIST'
-
 
 def parse_id_token(token: str) -> dict:
     parts = token.split(".")
@@ -19,3 +17,10 @@ def parse_date(date: str) -> str or None:
     if date is None:
         return date
     return date.split('.')[0][:-3]
+
+
+def parse_number(num: int) -> int:
+    if num % 1 == 0:
+        return int(num)
+    else:
+        return num

@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from backend.models import *
-from backend.parsing import parse_date
+from backend.parsing import parse_date, parse_number
 from rest_framework import serializers
 
 
@@ -25,67 +25,92 @@ class FacilitySerializer(ModelSerializer):
         return data
 
 
-class GasSerializerAllField(FacilitySerializer):
+class GasSerAllField(FacilitySerializer):
     class Meta:
         model = Gas
         fields = '__all__'
 
 
-class GasSerializerOneField(ModelSerializer):
+class GasSerOneField(ModelSerializer):
     class Meta:
         model = Gas
         fields = ('gasName',)
 
 
-class CompressorSerializerAllField(FacilitySerializer):
-    gasComposition = GasSerializerOneField(read_only=True)
+class CompSerAllField(FacilitySerializer):
+    gasComposition = GasSerOneField(read_only=True)
 
     class Meta:
         model = Compressor
         fields = '__all__'
 
 
-class CompressorSerializerOneField(FacilitySerializer):
+class CompSerOneField(FacilitySerializer):
     class Meta:
         model = Compressor
         fields = ('date',)
 
 
-class PowerPlantSerializerAllField(FacilitySerializer):
-    gasComposition = GasSerializerOneField(read_only=True)
+class PPSerAllField(FacilitySerializer):
+    gasComposition = GasSerOneField(read_only=True)
 
     class Meta:
         model = PowerPlant
         fields = '__all__'
 
 
-class PowerPlantSerializerOneField(FacilitySerializer):
+class PPSerOneField(FacilitySerializer):
     class Meta:
         model = PowerPlant
         fields = ('date',)
 
 
-class BoilerSerializerAllField(FacilitySerializer):
-    gasComposition = GasSerializerOneField(read_only=True)
+class BoilSerAllField(FacilitySerializer):
+    gasComposition = GasSerOneField(read_only=True)
 
     class Meta:
         model = Boiler
         fields = '__all__'
 
 
-class BoilerSerializerOneField(FacilitySerializer):
+class BoilSerOneField(FacilitySerializer):
     class Meta:
         model = Boiler
         fields = ('date',)
 
 
-class FormulasSerializer(FacilitySerializer):
-    compressor = serializers.SerializerMethodField()
+class CompSerTwoField(ModelSerializer):
+    class Meta:
+        model = Compressor
+        fields = ('date', 'refusalData')
+
+
+class PPSerTwoField(ModelSerializer):
+    class Meta:
+        model = PowerPlant
+        fields = ('date', 'refusalData')
+
+
+class BoilSerTwoField(ModelSerializer):
+    class Meta:
+        model = Boiler
+        fields = ('date', 'refusalData')
+
+
+class FormulasSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Formulas
         fields = '__all__'
 
-    def get_compressor(self, instance):
-        V = Compressor.objects.get().gasConsumptionVolume
-        return V
+    def to_representation(self, data):
+        data = super().to_representation(data)
+        data['date'] = parse_date(data['date'])
+
+        for key, value in data.items():
+            if 'coef' in key:
+                data[key] = parse_number(value)
+
+        data['date'] = parse_date(data['date'])
+        return data
