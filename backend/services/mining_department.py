@@ -12,22 +12,18 @@ from backend.services.auth import get_current_user
 
 
 class FacSerData:
-    count: int = 0  # Счетчик по заполненности сводного отчета
 
-    @classmethod
-    def set_fac_ser(cls, facility, fac_ser_two_field, fac_obj,
-                    fac_ser_all_field, fac_ser_one_field) -> ModelSerializer:
+    def __init__(self, facility, fac_ser_two_field, fac_obj,
+                 fac_ser_all_field, fac_ser_one_field):
         try:
             obj = facility.objects.get()
             if obj.date is None:
-                facSer = fac_ser_two_field(fac_obj)
+                self.facSer = fac_ser_two_field(fac_obj)
             else:
-                facSer = fac_ser_all_field(fac_obj)
-                cls.count += 1
-        except facility.DoesNotExist:
-            facSer = fac_ser_one_field(fac_obj)
+                self.facSer = fac_ser_all_field(fac_obj)
 
-        return facSer
+        except facility.DoesNotExist:
+            self.facSer = fac_ser_one_field(fac_obj)
 
 
 def get_summary_data() -> Response:
@@ -35,23 +31,24 @@ def get_summary_data() -> Response:
     ppObj = PowerPlant.objects.all().first()
     boilObj = Boiler.objects.all().first()
 
-    facSerObj = FacSerData()
+    compSer = FacSerData(Compressor,
+                         CompSerTwoField,
+                         compObj, CompSerAllField,
+                         CompSerOneField)
 
-    compSer = facSerObj. \
-        set_fac_ser(Compressor,
-                    CompSerTwoField,
-                    compObj, CompSerAllField,
-                    CompSerOneField)
+    compSer = compSer.facSer
 
-    ppSer = facSerObj. \
-        set_fac_ser(PowerPlant, PPSerTwoField,
-                    ppObj, PPSerAllField,
-                    PPSerOneField)
+    ppSer = FacSerData(PowerPlant, PPSerTwoField,
+                       ppObj, PPSerAllField,
+                       PPSerOneField)
 
-    boilSer = facSerObj. \
-        set_fac_ser(Boiler, BoilSerTwoField,
-                    boilObj, BoilSerAllField,
-                    BoilSerOneField)
+    ppSer = ppSer.facSer
+
+    boilSer = FacSerData(Boiler, BoilSerTwoField,
+                         boilObj, BoilSerAllField,
+                         BoilSerOneField)
+
+    boilSer = boilSer.facSer
 
     # try:
     #     obj = Compressor.objects.get()
@@ -99,7 +96,6 @@ def get_summary_data() -> Response:
             gasDict[i] = gasSer.data
             continue
 
-        facSerObj.count += 1
         gasSer = GasSerAllField(gasObj)
         gasDict[i] = gasSer.data
 
@@ -125,9 +121,25 @@ def get_summary_data() -> Response:
         'gases': gasDict,
     }
 
+    count: int = 0
+
+    for key, value in responce.data.items():
+        if key != 'gases':
+            for key2, value2 in value.items():
+                print(key2, value2)
+                if (key2 == 'date') and value2:
+                    count += 1
+                    break
+        else:
+            for key2, value2 in value.items():
+                for key3, value3 in value2.items():
+                    if (key3 == 'date') and value3:
+                        count += 1
+                        break
+
     isConfirmable = True
 
-    if facSerObj.count != len(responce.data.keys()) or isConfirmed:
+    if (count != len(responce.data.keys())) or isConfirmed:
         isConfirmable = False
 
     confirmData = {
