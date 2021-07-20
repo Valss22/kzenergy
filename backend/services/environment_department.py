@@ -12,7 +12,7 @@ def get_status_environment(facilities: dict):
     for key, value in facilities.items():
         try:
             obj = value.objects.get()
-            if not obj.user:
+            if obj.user:
                 obj.date = parse_date(obj.date)
                 responce.data[key] = f'{obj.user.fullName} {obj.date}'
             else:
