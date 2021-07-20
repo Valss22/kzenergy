@@ -76,6 +76,7 @@ class MiningDepartmentView(APIView):
 
 
 class EnvironmentDepartmentView(APIView):
+    #permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_calculated_formulas()
