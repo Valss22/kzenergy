@@ -126,7 +126,6 @@ def get_summary_data() -> Response:
     for key, value in responce.data.items():
         if key != 'gases':
             for key2, value2 in value.items():
-                print(key2, value2)
                 if (key2 == 'date') and value2:
                     count += 1
                     break

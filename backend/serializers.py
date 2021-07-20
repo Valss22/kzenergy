@@ -112,5 +112,4 @@ class FormulasSerializer(ModelSerializer):
             if 'coef' in key:
                 data[key] = parse_number(value)
 
-        data['date'] = parse_date(data['date'])
         return data

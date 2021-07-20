@@ -5,10 +5,18 @@ from backend.parsing import parse_number
 from backend.serializers import FormulasSerializer
 
 
+#def get_status_environment():
+
+
+
+
 def get_calculated_formulas():
     formulas = Formulas.objects.get()
 
     if not formulas.isConfirmed:
+
+
+
         return Response({'date': None})
 
     Vcomp = Compressor.objects.get().gasConsumptionVolume
@@ -49,7 +57,7 @@ def get_calculated_formulas():
             k[1] = parse_number(k[1])
             o[1] = parse_number(o[1])
             k[2] = parse_number(k[2])
-            o[0][k[0]] = f'{k[1]} × {o[1]} × {p} × {k[2]} = {k[1] * o[1] * p * k[2]}'
+            o[0][k[0]] = f'{k[1]} × {o[1]} × {p} × {k[2]} = {round(k[1] * o[1] * p * k[2], 2)}'
 
     serializer = FormulasSerializer(formulas)
 
