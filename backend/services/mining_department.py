@@ -50,35 +50,6 @@ def get_summary_data() -> Response:
 
     boilSer = boilSer.facSer
 
-    # try:
-    #     obj = Compressor.objects.get()
-    #     if obj.date is None:
-    #         compSer = CompSerTwoField(compObj)
-    #     else:
-    #         compSer = CompressorSerializerAllField(compObj)
-    #         count += 1
-    # except Compressor.DoesNotExist:
-    #     compSer = CompressorSerializerOneField(compObj)
-    # try:
-    #     obj = PowerPlant.objects.get()
-    #     if obj.date is None:
-    #         ppSer = PPSerTwoField(ppObj)
-    #     else:
-    #         ppSer = PowerPlantSerializerAllField(ppObj)
-    #         count += 1
-    # except PowerPlant.DoesNotExist:
-    #     ppSer = PowerPlantSerializerOneField(ppObj)
-    # try:
-    #     obj = Boiler.objects.get()
-    #     if obj.date is None:
-    #
-    #         boilSer = BoilSerTwoField(ppObj)
-    #     else:
-    #         boilSer = BoilerSerializerAllField(boilObj)
-    #         count += 1
-    # except Boiler.DoesNotExist:
-    #     boilSer = BoilerSerializerOneField(boilObj)
-
     gasNames = [obj.gasName for obj in Gas.objects.all()]
 
     gasDict = {}

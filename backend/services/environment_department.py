@@ -12,9 +12,11 @@ def get_status_environment(facilities: dict):
     for key, value in facilities.items():
         try:
             obj = value.objects.get()
-            obj.date = parse_date(obj.date)
-            responce.data[key] = f'{obj.user.fullName} {obj.date}'
-
+            if not obj.user:
+                obj.date = parse_date(obj.date)
+                responce.data[key] = f'{obj.user.fullName} {obj.date}'
+            else:
+                responce.data[key] = None
         except value.DoesNotExist:
             responce.data[key] = None
 
