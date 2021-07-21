@@ -21,8 +21,6 @@ class LoginView(APIView):
         return login(request)
 
 
-# TODO: добавить валидацию
-
 class FacilityView(APIView):
     permission_classes = [IsAuth, IsRightRole, IsCreated, ]
 
@@ -63,7 +61,7 @@ class GasCompositionView(APIView):
 
 
 class MiningDepartmentView(APIView):
-    permission_classes = [IsAuth, IsRightRole]
+    #permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_summary_data()
@@ -73,7 +71,7 @@ class MiningDepartmentView(APIView):
 
 
 class EnvironmentDepartmentView(APIView):
-    permission_classes = [IsAuth, IsRightRole]
+    #permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_calculated_formulas()

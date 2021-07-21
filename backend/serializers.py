@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from backend.models import *
 from backend.parsing import parse_date, parse_number
-from rest_framework import serializers
 
 
 class UserProfileSerializer(ModelSerializer):
