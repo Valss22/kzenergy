@@ -23,21 +23,36 @@ class IsRightRole(BasePermission):
         dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
         currentUser = User.objects.get(email=dataToken['email'])
 
-        if roleName == currentUser.role or currentUser.role == 'mining':
-            return True
+        if request.method == 'PATCH':
+            if (roleName == currentUser.role) or \
+                    (currentUser.role == 'mining'):
+                return True
+        else:
+            if roleName == currentUser.role:
+                return True
 
 
-class EnableToEdit(BasePermission):  # TODO: вынести условия и доделать мидлы
+def model_for_path(request):
+    path = request.get_full_path()
+    if path == '/object/compressor/':
+        model = Compressor
+    elif path == '/object/powerplant/':
+        model = PowerPlant
+    else:
+        model = Boiler
+
+    return model
+
+
+class EnableToEdit(BasePermission):
+
     def has_permission(self, request, view):
-        if request.method == 'PUT':
-            path = request.get_full_path()
 
-            if path == '/object/compressor/':
-                model = Compressor
-            elif path == '/object/powerplant/':
-                model = PowerPlant
-            else:
-                model = Boiler
+        # if request.method == 'PUT':
+        #     model = model_for_path(request)
+        #     if not model.date:
+        #         return True
+        return False
 
 
 class IsCreated(BasePermission):

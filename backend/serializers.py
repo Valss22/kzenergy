@@ -110,6 +110,6 @@ class FormulasSerializer(ModelSerializer):
 
         for key, value in data.items():
             if 'coef' in key:
-                data[key] = parse_number(value)
+                data[key] = str(parse_number(value))
 
         return data

@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 
-from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole
+from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole, EnableToEdit
 
 from backend.services.auth import *
 from backend.services.environment_department import get_calculated_formulas, update_formula
@@ -73,7 +73,7 @@ class MiningDepartmentView(APIView):
 
 
 class EnvironmentDepartmentView(APIView):
-    #permission_classes = [IsAuth, IsRightRole]
+    permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_calculated_formulas()
