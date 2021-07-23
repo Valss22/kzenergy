@@ -56,8 +56,9 @@ def create_gas(request):
 def set_refusal_gas_data(request):
     refusalData = get_refusal_data(request)
     gasName = request.data['gasName']
-    Gas.objects.filter(gasName=gasName).update(refusalData=refusalData,
-                                               date=None, user=None)
+    Gas.objects.filter(gasName=gasName) \
+        .update(refusalData=refusalData, date=None,
+                user=None, isEdited=False)
     return get_summary_data()
 
 

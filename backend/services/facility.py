@@ -79,8 +79,8 @@ def create_facility(cls, request) -> Response:
 def set_refusal_data(cls, request):
     FacilityRequest(cls, request)
     refusalData = get_refusal_data(request)
-    cls.model.objects.all().update(refusalData=refusalData,
-                                   user=None, date=None)
+    cls.model.objects.all().update(refusalData=refusalData, user=None,
+                                   date=None, isEdited=False)
     return get_summary_data()
 
 
@@ -98,5 +98,3 @@ def edit_data(cls, request) -> Response:
     obj = cls.model.objects.get()
     serializer = cls.modelSerializer(obj)
     return Response(serializer.data, status.HTTP_200_OK)
-
-

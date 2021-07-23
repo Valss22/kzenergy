@@ -1,7 +1,9 @@
 import jwt
+from rest_framework import status
 from rest_framework.permissions import BasePermission
 from backend.models import Compressor, PowerPlant, Boiler, Gas, User
 from kzenergy import settings
+from rest_framework.response import Response
 
 
 class IsAuth(BasePermission):
@@ -24,8 +26,7 @@ class IsRightRole(BasePermission):
         currentUser = User.objects.get(email=dataToken['email'])
 
         if request.method == 'PATCH':
-            if (roleName == currentUser.role) or \
-                    (currentUser.role == 'mining'):
+            if currentUser.role == 'mining':
                 return True
         else:
             if roleName == currentUser.role:
@@ -38,48 +39,54 @@ def model_for_path(request):
         model = Compressor
     elif path == '/object/powerplant/':
         model = PowerPlant
-    else:
+    elif path == '/object/boiler/':
         model = Boiler
-
+    else:
+        raise ValueError
     return model
 
 
-class EnableToEdit(BasePermission):
+def enable_to_edit(func):
+    def wrapper(cls, request):
+        model = model_for_path(request)
+        obj = model.objects.all().first()
 
-    def has_permission(self, request, view):
+        if obj.isEdited:
+            return Response({'error': 'This obj already edited'},
+                            status.HTTP_403_FORBIDDEN)
+        return func(cls, request)
 
-        # if request.method == 'PUT':
-        #     model = model_for_path(request)
-        #     if not model.date:
-        #         return True
-        return False
+    return wrapper
 
 
-class IsCreated(BasePermission):
+def enable_to_edit_gas(func):
+    def wrapper(cls, request):
+        obj = Gas.objects.get(gasName=request.data['gasName'])
+        if obj.isEdited:
+            return Response({'error': 'This gas already edited'},
+                            status.HTTP_403_FORBIDDEN)
+        return func(cls, request)
 
-    def has_permission(self, request, view) -> bool:
+    return wrapper
 
-        if request.method == 'POST':
-            path = request.get_full_path()
 
-            if path == '/object/compressor/':
-                model = Compressor
-            elif path == '/object/powerplant/':
-                model = PowerPlant
-            else:
-                model = Boiler
+def enable_to_create(func):
+    def wrapper(cls, request):
+        model = model_for_path(request)
 
-            if len(model.objects.all()) == 0:
-                return True
+        if len(model.objects.all()) > 0:
+            return Response({'error': 'This obj already exists'},
+                            status.HTTP_403_FORBIDDEN)
 
-        return True
+        return func(cls, request)
+
+    return wrapper
 
 
 class IsGasExists(BasePermission):
 
     def has_permission(self, request, view) -> bool:
         if request.method == 'POST':
-
             try:
                 gas = Gas.objects.get(gasName=request.data['gasName'])
                 if gas.date is not None:

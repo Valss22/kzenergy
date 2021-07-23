@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 
-from backend.permissions import IsCreated, IsAuth, IsGasExists, IsRightRole, EnableToEdit
+from backend.parsing import parse_date
+from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
+from backend.serializers import CompSerAllField, CompSerArchive, PPSerArchive, BoilSerArchive
 
 from backend.services.auth import *
 from backend.services.environment_department import get_calculated_formulas, update_formula
@@ -22,7 +24,7 @@ class LoginView(APIView):
 
 
 class FacilityView(APIView):
-    permission_classes = [IsAuth, IsRightRole, IsCreated, ]
+    permission_classes = [IsAuth, IsRightRole]
 
     model: models.Model
     modelSerializer: models.Model
@@ -32,6 +34,7 @@ class FacilityView(APIView):
         return get_facility(cls, request)
 
     @classmethod
+    @enable_to_create
     def post(cls, request):
         return create_facility(cls, request)
 
@@ -40,12 +43,13 @@ class FacilityView(APIView):
         return set_refusal_data(cls, request)
 
     @classmethod
+    @enable_to_edit
     def put(cls, request):
         return edit_data(cls, request)
 
 
 class GasCompositionView(APIView):
-    permission_classes = [IsAuth, IsRightRole, IsGasExists]
+    permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_gas(request)
@@ -56,12 +60,13 @@ class GasCompositionView(APIView):
     def patch(self, request):
         return set_refusal_gas_data(request)
 
+    @enable_to_edit_gas
     def put(self, request):
         return edit_gas_data(request)
 
 
 class MiningDepartmentView(APIView):
-    #permission_classes = [IsAuth, IsRightRole]
+    # permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_summary_data()
@@ -71,10 +76,36 @@ class MiningDepartmentView(APIView):
 
 
 class EnvironmentDepartmentView(APIView):
-    #permission_classes = [IsAuth, IsRightRole]
+    # permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_calculated_formulas()
 
     def patch(self, request):
         return update_formula(request)
+
+    def post(self, request):
+        compObj = Compressor.objects.get()
+        comSer = CompSerArchive(compObj)
+
+        ppObj = PowerPlant.objects.get()
+        ppSer = PPSerArchive(ppObj)
+
+        boilObj = Boiler.objects.get()
+        boilSer = BoilSerArchive(boilObj)
+
+        miningDep = {
+            'user': Formulas.objects.get().user,
+            'date': parse_date(Formulas.objects.get().date),
+        }
+
+        currentUser = get_current_user(request)
+
+        Archive.objects.create(
+            compressor=comSer.data,
+            powerplant=ppSer.data,
+            boiler=boilSer.data,
+            miningDep=miningDep
+        )
+
+        return Response({'message': 'ok'})

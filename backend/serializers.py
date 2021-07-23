@@ -50,6 +50,12 @@ class CompSerOneField(FacilitySerializer):
         fields = ('date',)
 
 
+class CompSerArchive(FacilitySerializer):
+    class Meta:
+        model = Compressor
+        exclude = ('gasComposition', 'refusalData', 'isEdited')
+
+
 class PPSerAllField(FacilitySerializer):
     gasComposition = GasSerOneField(read_only=True)
 
@@ -64,6 +70,12 @@ class PPSerOneField(FacilitySerializer):
         fields = ('date',)
 
 
+class PPSerArchive(ModelSerializer):
+    class Meta:
+        model = PowerPlant
+        exclude = ('gasComposition', 'refusalData', 'isEdited')
+
+
 class BoilSerAllField(FacilitySerializer):
     gasComposition = GasSerOneField(read_only=True)
 
@@ -76,6 +88,12 @@ class BoilSerOneField(FacilitySerializer):
     class Meta:
         model = Boiler
         fields = ('date',)
+
+
+class BoilSerArchive(ModelSerializer):
+    class Meta:
+        model = Boiler
+        exclude = ('gasComposition', 'refusalData', 'isEdited')
 
 
 class CompSerTwoField(ModelSerializer):

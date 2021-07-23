@@ -94,3 +94,12 @@ class Formulas(models.Model):
     CO2coef = models.FloatField(default=1)
     CH4coef = models.FloatField(default=1)
     N2Ocoef = models.FloatField(default=1)
+
+
+class Archive(models.Model):
+    date = models.CharField(default=None, max_length=50, null=True)
+    compressor = models.JSONField(null=True)
+    powerplant = models.JSONField(null=True)
+    boiler = models.JSONField(null=True)
+    miningDep = models.JSONField(null=True)
+    environmentDep = models.JSONField(null=True)
