@@ -6,6 +6,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))

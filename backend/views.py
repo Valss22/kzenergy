@@ -6,6 +6,7 @@ from backend.serializers import CompSerAllField, CompSerArchive, PPSerArchive, B
 
 from backend.services.auth import *
 from backend.services.environment_department import get_calculated_formulas, update_formula
+from backend.services.exc import test
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.mining_department import get_summary_data, sign_report
@@ -107,5 +108,11 @@ class EnvironmentDepartmentView(APIView):
             boiler=boilSer.data,
             miningDep=miningDep
         )
+
+        import cloudinary.uploader
+
+        ex = cloudinary.uploader.upload('media/report.xlsx', resource_type='auto')
+
+        UserProfile.objects.create(excel=ex['secure_url'])
 
         return Response({'message': 'ok'})

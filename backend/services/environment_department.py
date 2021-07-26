@@ -42,3 +42,5 @@ def get_calculated_formulas():
 def update_formula(request):
     Formulas.objects.all().update(**request.data)
     return get_calculated_formulas()
+
+

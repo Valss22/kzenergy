@@ -57,7 +57,7 @@ def get_summary_data() -> Response:
     for i in gasNames:
         gasObj = Gas.objects.get(gasName=i)
 
-        if gasObj.date is None:
+        if not gasObj.date:
             class GasSer(ModelSerializer):
                 class Meta:
                     model = Gas
@@ -77,7 +77,7 @@ def get_summary_data() -> Response:
     date = Formulas.objects.get().date
     isConfirmed = Formulas.objects.get().isConfirmed
 
-    if user is not None:
+    if user:
         user = {'fullName': user.fullName,
                 'id': user.id}
 
