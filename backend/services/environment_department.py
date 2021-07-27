@@ -160,15 +160,15 @@ def calculate_emission(request):
     boilPoll['energy'] = round(Vboil / boil.steamVolume, 2)
 
     def get_total_poll(facility):
-        facility['totalEmis'] = sum([
+        facility['totalEmis'] = round(sum([
             facility['NO2'], facility['NO'],
             facility['SO2'], facility['CO']
-        ])
+        ]), 2)
 
-        facility['totalGrhs'] = sum([
+        facility['totalGrhs'] = round(sum([
             facility['CO2'], facility['CH4'],
             facility['N2O']
-        ])
+        ]), 2)
 
     get_total_poll(compPoll)
     get_total_poll(ppPoll)
