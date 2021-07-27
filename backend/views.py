@@ -2,11 +2,12 @@ from rest_framework.views import APIView
 
 from backend.parsing import parse_date
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
-from backend.serializers import CompSerAllField, CompSerArchive, PPSerArchive, BoilSerArchive
+from backend.serializers import CompSerArchive, PPSerArchive, BoilSerArchive
 
 from backend.services.auth import *
-from backend.services.environment_department import get_calculated_formulas, update_formula
-from backend.services.exc import test
+from backend.services.environment_department import get_calculated_formulas, update_formula, get_data_for_excel, \
+    get_status_environment, calculate_emission
+from backend.services.excel import create_excel
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.mining_department import get_summary_data, sign_report
@@ -86,33 +87,4 @@ class EnvironmentDepartmentView(APIView):
         return update_formula(request)
 
     def post(self, request):
-        compObj = Compressor.objects.get()
-        comSer = CompSerArchive(compObj)
-
-        ppObj = PowerPlant.objects.get()
-        ppSer = PPSerArchive(ppObj)
-
-        boilObj = Boiler.objects.get()
-        boilSer = BoilSerArchive(boilObj)
-
-        miningDep = {
-            'user': Formulas.objects.get().user,
-            'date': parse_date(Formulas.objects.get().date),
-        }
-
-        currentUser = get_current_user(request)
-
-        Archive.objects.create(
-            compressor=comSer.data,
-            powerplant=ppSer.data,
-            boiler=boilSer.data,
-            miningDep=miningDep
-        )
-
-        import cloudinary.uploader
-
-        ex = cloudinary.uploader.upload('media/report.xlsx', resource_type='auto')
-
-        UserProfile.objects.create(excel=ex['secure_url'])
-
-        return Response({'message': 'ok'})
+        return calculate_emission(request)

@@ -1,8 +1,12 @@
 import pandas as pd
 
 
-def test():
+def create_excel(volumes: {str: float}, density: float,
+                 coeffs: {str: float}, gas_dict: {str: float},
+                 lower_heat: float, energy_data: {str: {}}) -> None:
     df = pd.DataFrame()
+
+    pollGasData = (density, gas_dict['nitrogen'], gas_dict['sulfur'], gas_dict['carbon'], *(None,) * 5)
 
     pollutants = [['Источники выбросов ЗВ',
                    'Объем сожженного газа (тыс*м3)',
@@ -11,17 +15,14 @@ def test():
                    'Выбросы NO2 (тонн)', 'Выбросы NO (тонн)',
                    'Выбросы SO2 (тонн)', 'Выбросы CO (тонн)',
                    'Всего выбросов ЗВ (тонн)'],
-                  ['ГТЭС', 123, 'очищенный газ', 0.766,
-                   0.342, 0.4353, 0.0012, 45, 3, 4, 5, 8],
-                  ['Турбины по закачке газа', 234, 'очищенный газ',
-                   0.766, 0.232, 0.5463, 0.0032, 4, 6, 7, 2, 3],
-                  ['Котлы высокого давления', 567, 'очищенный газ',
-                   0.766, 0.6632, 0.8463, 0.0552, 7, 63, 72, 23, 443]]
+                  ['ГТЭС', volumes['pp'], 'очищенный газ', *pollGasData],
+                  ['Турбины по закачке газа', volumes['comp'], 'очищенный газ', *pollGasData],
+                  ['Котлы высокого давления', volumes['boil'], 'очищенный газ', *pollGasData]]
 
     OFFSET_COL = 2
     OFFSET_ROW = 2
 
-    writer = pd.ExcelWriter('../../media/report.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter('report.xlsx', engine='xlsxwriter')
 
     df.to_excel(writer, sheet_name='Sheet1', index=False)
 
@@ -86,9 +87,10 @@ def test():
 
             elif (row != OFFSET_ROW) and (7 <= j < len(i) - 1):
                 cells = ['G', 'G', 'H', 'I']  # клетки в которых записаны доли хим. элементов в газе
+                coeffList = [coeffs['NO2coef'], coeffs['NOcoef'], coeffs['SO2coef'], coeffs['COcoef']]
                 ci = j - 7
                 rowNum: str = str(row + 1)
-                formula = f'=ROUND(D{rowNum}*F{rowNum}*{cells[ci]}{rowNum}, 2)'
+                formula = f'=ROUND({coeffList[ci]}*D{rowNum}*F{rowNum}*{cells[ci]}{rowNum}, 2)'
                 worksheet_write_formula(formula, field_format_polutants)
 
             elif j == len(i) - 1:
@@ -119,6 +121,9 @@ def test():
         'bg_color': '#FFE7E7',
     })
 
+    grhsGasData = (density, lower_heat, gas_dict['CO2EmissionFactor'],
+                   gas_dict['CH4SpecificFactor'], gas_dict['N2OSpecificFactor'], *(None,) * 4)
+
     grhsGases = [['Источники выбросов ПГ',
                   'Объем сожженного газа (тыс*м3)',
                   'Тип топлива', 'Плотность газа (кг/м3)',
@@ -130,12 +135,9 @@ def test():
                   'Выбросы CH4 (тонн)',
                   'Выбросы N2O (тонн)',
                   'Всего выбросов ПГ (тонн)'],
-                 ['ГТЭС', 123, 'очищенный газ', 0.766,
-                  45.71, 57.96, 4, 1, 2, 0.1, 3, 32],
-                 ['Турбины по закачке газа', 331, 'очищенный газ', 0.766,
-                  45.71, 57.96, 4, 1, 2, 4, 5, 52],
-                 ['Котлы высокого давления', 567, 'очищенный газ', 0.766,
-                  45.71, 57.96, 4, 1, 2, 0.13, 43, 56]]
+                 ['ГТЭС', volumes['pp'], 'очищенный газ', *grhsGasData],
+                 ['Турбины по закачке газа', volumes['comp'], 'очищенный газ', *grhsGasData],
+                 ['Котлы высокого давления', volumes['boil'], 'очищенный газ', *grhsGasData]]
 
     row = OFFSET_ROW + 8
 
@@ -152,9 +154,10 @@ def test():
 
             elif (row != OFFSET_ROW + 8) and (8 <= j < len(i) - 1):
                 cells = ['H', 'I', 'J']
+                coeffList = [coeffs['CO2coef'], coeffs['CH4coef'], coeffs['N2Ocoef']]
                 ci = j - 8
                 rowNum: str = str(row + 1)
-                formula = f'=ROUND(D{rowNum}*F{rowNum}*G{rowNum}*{cells[ci]}{rowNum}, 2)'
+                formula = f'=ROUND({coeffList[ci]}*D{rowNum}*F{rowNum}*G{rowNum}*{cells[ci]}{rowNum}, 2)'
                 worksheet_write_formula(formula, field_format_grhs)
 
             elif j == len(i) - 1:
@@ -173,17 +176,20 @@ def test():
     energyPP = [['Источник потребления энергии', 'Время работы (часы)',
                  'Объем сожженного газа (тыс*м3)', 'Выработанная электроэнергия (МВт*ч)',
                  'Показатель энергоэффективности (м3 ТГ/МВт)'],
-                ['ГТЭС', 123, 54, 456, 452]]
+                ['ГТЭС', energy_data['pp']['hours'], volumes['pp'],
+                 energy_data['pp']['generatedEnergy'], None]]
 
     energyComp = [['Источник потребления энергии', 'Время работы (часы)',
                    'Объем сожженного газа (тыс*м3)', 'Объем закаченного газа (тыс*м3)',
                    'Показатель энергоэффективности (м3 ТГ/м3 СГ)'],
-                  ['Турбины по закачке газа', 124, 432, 543, 145]]
+                  ['Турбины по закачке газа', energy_data['comp']['hours'],
+                   volumes['comp'], energy_data['comp']['volumeOfInjected'], None]]
 
     energyBoil = [['Источник потребления энергии', 'Время работы (часы)',
                    'Объем сожженного газа (тыс*м3)', 'Объем пара (тонн)',
                    'Показатель энергоэффективности (м3 ТГ/м3 тонна пара)'],
-                  ['Котлы высокого давления', 124, 323, 451, 112]]
+                  ['Котлы высокого давления', energy_data['boil']['hours'],
+                   volumes['boil'], energy_data['boil']['volumeOfSteam'], None]]
 
     header_format_energy = workbook.add_format({
         'bold': True,
@@ -273,5 +279,3 @@ def test():
 
     writer.save()
 
-
-#test()
