@@ -151,13 +151,28 @@ def calculate_emission(request):
             'N2O': round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2),
         }
 
-    compPollutants = facility_pollutants(Vcomp)
-    ppPollutants = facility_pollutants(Vpp)
-    boilPollutants = facility_pollutants(Vboil)
+    compPoll = facility_pollutants(Vcomp)
+    ppPoll = facility_pollutants(Vpp)
+    boilPoll = facility_pollutants(Vboil)
 
-    compPollutants['energy'] = round(Vcomp / comp.volumeOfInjectedGas, 2)
-    ppPollutants['energy'] = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
-    boilPollutants['energy'] = round(Vboil / boil.steamVolume, 2)
+    compPoll['energy'] = round(Vcomp / comp.volumeOfInjectedGas, 2)
+    ppPoll['energy'] = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
+    boilPoll['energy'] = round(Vboil / boil.steamVolume, 2)
+
+    def get_total_poll(facility):
+        facility['totalEmis'] = sum([
+            facility['NO2'], facility['NO'],
+            facility['SO2'], facility['CO']
+        ])
+
+        facility['totalGrhs'] = sum([
+            facility['CO2'], facility['CH4'],
+            facility['N2O']
+        ])
+
+    get_total_poll(compPoll)
+    get_total_poll(ppPoll)
+    get_total_poll(boilPoll)
 
     currentUser = get_current_user(request)
 
@@ -171,9 +186,9 @@ def calculate_emission(request):
             'fullName': currentUser.fullName,
             'id': currentUser.id
         },
-        'compressor': compPollutants,
-        'powerplant': ppPollutants,
-        'boiler': boilPollutants,
+        'compressor': compPoll,
+        'powerplant': ppPoll,
+        'boiler': boilPoll,
         'excel': excel['secure_url']
     }
 
