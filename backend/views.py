@@ -108,4 +108,4 @@ class ArchiveView(APIView):
         archive = Archive.objects.all()
         serializer = ArchiveSerializer(archive, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data.__reversed__())
