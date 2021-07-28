@@ -108,7 +108,7 @@ class ArchiveView(APIView):
                 data = super().to_representation(data)
 
                 if role in ['mining', 'EPWorker']:
-                    return data
+                    return data[role]
 
                 data2 = {}
                 for i in fieldsDict[role]:
