@@ -126,7 +126,7 @@ def calculate_emission(request):
             'fullName': formulas.user.fullName,
             'id': formulasDict['user_id']
         },
-        'date': formulasDict['date'],
+        'date': parse_date(formulasDict['date']),
     }
 
     comp = Compressor.objects.get()

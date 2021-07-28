@@ -1,6 +1,9 @@
+import collections
+
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
+from backend.data_fields import fieldsDict
 from backend.parsing import parse_date
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
 from backend.serializers import CompSerArchive, PPSerArchive, BoilSerArchive
@@ -52,7 +55,7 @@ class FacilityView(APIView):
 
 
 class GasCompositionView(APIView):
-    permission_classes = [IsAuth, IsRightRole]
+    # permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
         return get_gas(request)
@@ -103,7 +106,11 @@ class ArchiveView(APIView):
 
             def to_representation(self, data):
                 data = super().to_representation(data)
-                return data[role]
+                data2 = {}
+                for i in fieldsDict[role]:
+                    data2[i] = data[role][i]
+
+                return data2
 
         archive = Archive.objects.all()
         serializer = ArchiveSerializer(archive, many=True)
