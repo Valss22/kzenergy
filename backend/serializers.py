@@ -70,7 +70,7 @@ class PPSerOneField(FacilitySerializer):
         fields = ('date',)
 
 
-class PPSerArchive(ModelSerializer):
+class PPSerArchive(FacilitySerializer):
     class Meta:
         model = PowerPlant
         exclude = ('gasComposition', 'refusalData', 'isEdited')
@@ -90,7 +90,7 @@ class BoilSerOneField(FacilitySerializer):
         fields = ('date',)
 
 
-class BoilSerArchive(ModelSerializer):
+class BoilSerArchive(FacilitySerializer):
     class Meta:
         model = Boiler
         exclude = ('gasComposition', 'refusalData', 'isEdited')

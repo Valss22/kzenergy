@@ -5,6 +5,7 @@ from backend.parsing import parse_date, parse_number
 from backend.serializers import FormulasSerializer, CompSerArchive, PPSerArchive, BoilSerArchive, GasSerArchive
 from backend.services.auth import get_current_user
 from backend.services.excel import create_excel
+from datetime import datetime
 
 
 def get_status_environment(facilities: dict):
@@ -195,16 +196,14 @@ def calculate_emission(request):
             'fullName': currentUser.fullName,
             'id': currentUser.id
         },
+        'date': parse_date(str(datetime.now())),
         'compressor': compPoll,
         'powerplant': ppPoll,
         'boiler': boilPoll,
         'excel': excel['secure_url']
     }
 
-    import datetime
-
     Archive.objects.create(
-        date=parse_date(str(datetime.datetime.now())),
         compressor=comSer.data,
         powerplant=ppSer.data,
         boiler=boilSer.data,

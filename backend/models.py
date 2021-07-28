@@ -97,7 +97,6 @@ class Formulas(models.Model):
 
 
 class Archive(models.Model):
-    date = models.CharField(default=None, max_length=50, null=True)
     compressor = models.JSONField(null=True)
     powerplant = models.JSONField(null=True)
     boiler = models.JSONField(null=True)
