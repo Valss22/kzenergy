@@ -132,3 +132,16 @@ class FormulasSerializer(ModelSerializer):
         return data
 
 
+class GasSerArchive(FacilitySerializer):
+    class Meta:
+        model = Gas
+        exclude = ('refusalData', 'isEdited')
+
+
+
+# class ArchiveRoleSerializer(ModelSerializer):
+#     role: str
+#
+#     class Meta:
+#         model = Formulas
+#         fields

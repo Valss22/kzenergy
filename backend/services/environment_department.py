@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 
 from backend.models import Formulas, Compressor, PowerPlant, Boiler, Gas, Archive
-from backend.parsing import parse_date
-from backend.serializers import FormulasSerializer, CompSerArchive, PPSerArchive, BoilSerArchive
+from backend.parsing import parse_date, parse_number
+from backend.serializers import FormulasSerializer, CompSerArchive, PPSerArchive, BoilSerArchive, GasSerArchive
 from backend.services.auth import get_current_user
 from backend.services.excel import create_excel
 
@@ -89,7 +89,7 @@ def get_response_environment():
     response = Response()
 
     if Archive.objects.all().exists():
-        response.data = {'archive': archive.environmentDep}
+        response.data = {'archive': archive.EPWorker}
         response.data['archive']['date'] = archive.date
 
     else:
@@ -121,7 +121,7 @@ def calculate_emission(request):
 
     formulas = Formulas.objects.get()
 
-    miningDep = {
+    mining = {
         'user': {
             'fullName': formulas.user.fullName,
             'id': formulasDict['user_id']
@@ -142,13 +142,20 @@ def calculate_emission(request):
     def facility_pollutants(volume) -> dict:
         lowHeatCom = gasDict['LowerHeatCombustion']
         return {
-            'NO2': round(formulasDict['NO2coef'] * density * volume * gasDict['nitrogen'], 2),
-            'NO': round(formulasDict['NOcoef'] * density * volume * gasDict['nitrogen'], 2),
-            'SO2': round(formulasDict['SO2coef'] * density * volume * gasDict['sulfur'], 2),
-            'CO': round(formulasDict['COcoef'] * density * volume * gasDict['carbon'], 2),
-            'CO2': round(gasDict['CO2EmissionFactor'] * formulasDict['CO2coef'] * density * volume * lowHeatCom, 2),
-            'CH4': round(gasDict['CH4SpecificFactor'] * formulasDict['CH4coef'] * density * volume * lowHeatCom, 2),
-            'N2O': round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2),
+            'NO2': parse_number(
+                round(formulasDict['NO2coef'] * density * volume * gasDict['nitrogen'], 2)),
+            'NO': parse_number(
+                round(formulasDict['NOcoef'] * density * volume * gasDict['nitrogen'], 2)),
+            'SO2': parse_number(
+                round(formulasDict['SO2coef'] * density * volume * gasDict['sulfur'], 2)),
+            'CO': parse_number(
+                round(formulasDict['COcoef'] * density * volume * gasDict['carbon'], 2)),
+            'CO2': parse_number(
+                round(gasDict['CO2EmissionFactor'] * formulasDict['CO2coef'] * density * volume * lowHeatCom, 2)),
+            'CH4': parse_number(
+                round(gasDict['CH4SpecificFactor'] * formulasDict['CH4coef'] * density * volume * lowHeatCom, 2)),
+            'N2O': parse_number(
+                round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2)),
         }
 
     compPoll = facility_pollutants(Vcomp)
@@ -174,14 +181,16 @@ def calculate_emission(request):
     get_total_poll(ppPoll)
     get_total_poll(boilPoll)
 
+    gasObj = Gas.objects.get()
+    gasSer = GasSerArchive(gasObj)
+
     currentUser = get_current_user(request)
 
     import cloudinary.uploader
-    dictForExcel = get_data_for_excel()
-    create_excel(**dictForExcel)
+    create_excel(**get_data_for_excel())
     excel = cloudinary.uploader.upload('report.xlsx', resource_type='auto')
 
-    environmentDep = {
+    environment = {
         'user': {
             'fullName': currentUser.fullName,
             'id': currentUser.id
@@ -199,8 +208,9 @@ def calculate_emission(request):
         compressor=comSer.data,
         powerplant=ppSer.data,
         boiler=boilSer.data,
-        miningDep=miningDep,
-        environmentDep=environmentDep
+        chemical=gasSer.data,
+        mining=mining,
+        EPWorker=environment
     )
 
     Gas.objects.get().delete()

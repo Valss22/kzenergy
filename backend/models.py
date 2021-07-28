@@ -101,5 +101,6 @@ class Archive(models.Model):
     compressor = models.JSONField(null=True)
     powerplant = models.JSONField(null=True)
     boiler = models.JSONField(null=True)
-    miningDep = models.JSONField(null=True)
-    environmentDep = models.JSONField(null=True)
+    chemical = models.JSONField(null=True)
+    mining = models.JSONField(null=True)
+    EPWorker = models.JSONField(null=True)

@@ -1,3 +1,4 @@
+from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from backend.parsing import parse_date
@@ -88,3 +89,23 @@ class EnvironmentDepartmentView(APIView):
 
     def post(self, request):
         return calculate_emission(request)
+
+
+class ArchiveView(APIView):
+
+    def get(self, request):
+        role = request.query_params['role']
+
+        class ArchiveSerializer(ModelSerializer):
+            class Meta:
+                model = Archive
+                fields = (role,)
+
+            def to_representation(self, data):
+                data = super().to_representation(data)
+                return data[role]
+
+        archive = Archive.objects.all()
+        serializer = ArchiveSerializer(archive, many=True)
+
+        return Response(serializer.data)
