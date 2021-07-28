@@ -106,10 +106,13 @@ class ArchiveView(APIView):
 
             def to_representation(self, data):
                 data = super().to_representation(data)
+
+                if role in ['mining', 'EPWorker']:
+                    return data
+
                 data2 = {}
                 for i in fieldsDict[role]:
                     data2[i] = data[role][i]
-
                 return data2
 
         archive = Archive.objects.all()
