@@ -91,7 +91,6 @@ def get_response_environment():
 
     if Archive.objects.all().exists():
         response.data = {'archive': archive.EPWorker}
-        response.data['archive']['date'] = archive.date
 
     else:
         response.data = {'archive': None}
