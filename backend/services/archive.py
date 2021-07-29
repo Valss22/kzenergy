@@ -19,6 +19,21 @@ def get_percent_deviation(facility: str, field: str, curr_value: float):
     return None
 
 
+def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
+    return {
+        field + '%': get_percent_deviation(facility, field, curr_value)
+    }
+
+
+def get_percent_fields(facility_poll: {str: dict}, ) -> dict:
+    facilityPollPercent = {}
+    for fName in facility_poll.keys():
+        for key, value in facility_poll[fName].items():
+            facilityPollPercent.update(percent_deviation(fName, key, value))
+
+    return facilityPollPercent
+
+
 def get_archive(request):
     role = request.query_params['role']
 

@@ -81,7 +81,7 @@ class EnvironmentDepartmentView(APIView):
     # permission_classes = [IsAuth, IsRightRole]
 
     def get(self, request):
-        return get_calculated_formulas(request)
+        return get_calculated_formulas()
 
     def patch(self, request):
         return update_formula(request)
