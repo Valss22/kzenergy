@@ -28,11 +28,11 @@ def get_status_environment(facilities: dict):
     return response
 
 
-def get_calculated_formulas():
+def get_calculated_formulas(request):
     formulas = Formulas.objects.get()
 
     if not formulas.isConfirmed:
-        return get_response_environment()
+        return calculate_emission(request)
 
     serializer = FormulasSerializer(formulas)
     return Response(serializer.data)
@@ -40,7 +40,7 @@ def get_calculated_formulas():
 
 def update_formula(request):
     Formulas.objects.all().update(**request.data)
-    return get_calculated_formulas()
+    return get_calculated_formulas(request)
 
 
 def get_data_for_excel() -> dict:
