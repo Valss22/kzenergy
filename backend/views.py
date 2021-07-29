@@ -1,17 +1,13 @@
-import collections
-
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from backend.data_fields import fieldsDict
-from backend.parsing import parse_date
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
-from backend.serializers import CompSerArchive, PPSerArchive, BoilSerArchive
+
 
 from backend.services.auth import *
-from backend.services.environment_department import get_calculated_formulas, update_formula, get_data_for_excel, \
-    get_status_environment, calculate_emission
-from backend.services.excel import create_excel
+from backend.services.environment_department import get_calculated_formulas, update_formula, calculate_emission
+
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.mining_department import get_summary_data, sign_report
