@@ -98,8 +98,9 @@ def get_response_environment():
             if key in ['compressor', 'powerplant', 'boiler']:
                 facilityPoll.update({key: value})
 
-        for f in ['compressor', 'powerplant', 'boiler']:
-            response.data['archive'][f].update(get_percent_fields(facilityPoll)[f])
+        facPoll = get_percent_fields(facilityPoll)
+        for key, value in facPoll.items():
+            response.data['archive'][key].update(value)
 
     else:
         response.data = {'archive': None}
@@ -167,10 +168,10 @@ def calculate_emission(request):
                 round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2)),
         }
 
-    def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
-        return {
-            field + '%': get_percent_deviation(facility, field, curr_value)
-        }
+    # def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
+    #     return {
+    #         field + '%': get_percent_deviation(facility, field, curr_value)
+    #     }
 
     compPoll = facility_pollutants(Vcomp)
     # compPollPercent = {}
@@ -248,7 +249,7 @@ def calculate_emission(request):
         EPWorker=environment
     )
 
-    Gas.objects.get().delete()
-    Formulas.objects.filter().update(isConfirmed=False, date=None, user=None)
+    # Gas.objects.get().delete()
+    # Formulas.objects.filter().update(isConfirmed=False, date=None, user=None)
 
     return get_response_environment()

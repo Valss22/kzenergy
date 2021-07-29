@@ -8,10 +8,12 @@ from backend.models import Archive
 def get_percent_deviation(facility: str, field: str, curr_value: float):
     total = 0
     archive = Archive.objects.all()
-    for arch in archive:
-        total += arch.__dict__['EPWorker'][facility][field]
 
     if len(archive) > 1:
+        for arch in archive:
+            print(arch.__dict__['EPWorker'][facility][field])
+            total += arch.__dict__['EPWorker'][facility][field]
+
         avg = total / len(archive)
         onePer = avg / 100
         return (curr_value - avg) / onePer
@@ -26,11 +28,18 @@ def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
 
 
 def get_percent_fields(facility_poll: {str: dict}, ) -> dict:
-    facilityPollPercent = {}
+    facilityPollPercent = {'compressor': {},
+                           'powerplant': {},
+                           'boiler': {}}
+
+    # print(facility_poll.keys())
+
     for fName in facility_poll.keys():
         for key, value in facility_poll[fName].items():
-            facilityPollPercent.update(percent_deviation(fName, key, value))
+            # print(key, type(value))
+            facilityPollPercent[fName].update(percent_deviation(fName, key, value))
 
+    print(facilityPollPercent)
     return facilityPollPercent
 
 
