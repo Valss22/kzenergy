@@ -85,13 +85,15 @@ def get_data_for_excel() -> dict:
     }
 
 
-def get_response_environment():
+def get_response_environment(facility_percent: dict):
     archive = Archive.objects.all().last()
 
     response = Response()
 
     if Archive.objects.all().exists():
         response.data = {'archive': archive.EPWorker}
+        for f in ['compressor', 'powerplant', 'boiler']:
+            response.data['archive'][f].update(facility_percent[f])
 
     else:
         response.data = {'archive': None}
@@ -165,50 +167,50 @@ def calculate_emission(request):
         }
 
     compPoll = facility_pollutants(Vcomp)
-    compPollCopy = compPoll
-    for key, value in compPollCopy.copy().items():
-        compPoll.update(percent_deviation('compressor', key, value))
+    compPollPercent = {}
+    for key, value in compPoll.items():
+        compPollPercent.update(percent_deviation('compressor', key, value))
 
     ppPoll = facility_pollutants(Vpp)
-    ppPollCopy = ppPoll
-    for key, value in ppPollCopy.copy().items():
-        ppPoll.update(percent_deviation('powerplant', key, value))
+    ppPollPercent = {}
+    for key, value in ppPoll.items():
+        ppPollPercent.update(percent_deviation('powerplant', key, value))
 
     boilPoll = facility_pollutants(Vboil)
-    boilPollCopy = boilPoll
-    for key, value in boilPollCopy.copy().items():
-        boilPoll.update(percent_deviation('boiler', key, value))
+    boilPollPercent = {}
+    for key, value in boilPoll.items():
+        boilPollPercent.update(percent_deviation('boiler', key, value))
 
     compEnergy = round(Vcomp / comp.volumeOfInjectedGas, 2)
     compPoll['energy'] = compEnergy
-    compPoll.update(percent_deviation('compressor', 'energy', compEnergy))
+    compPollPercent.update(percent_deviation('compressor', 'energy', compEnergy))
 
     ppEnergy = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
     ppPoll['energy'] = ppEnergy
-    ppPoll.update(percent_deviation('powerplant', 'energy', ppEnergy))
+    ppPollPercent.update(percent_deviation('powerplant', 'energy', ppEnergy))
 
     boilEnergy = round(Vboil / boil.steamVolume, 2)
     boilPoll['energy'] = boilEnergy
-    ppPoll.update(percent_deviation('boiler', 'energy', boilEnergy))
+    boilPollPercent.update(percent_deviation('boiler', 'energy', boilEnergy))
 
-    def get_total_poll(facility, fac_name: str):
+    def get_total_poll(facility, facility_percent, fac_name: str):
         totalEmis = round(sum([
             facility['NO2'], facility['NO'],
             facility['SO2'], facility['CO']
         ]), 2)
         facility['totalEmis'] = totalEmis
-        facility.update(percent_deviation(fac_name, 'totalEmis', totalEmis))
+        facility_percent.update(percent_deviation(fac_name, 'totalEmis', totalEmis))
 
         totalGrhs = round(sum([
             facility['CO2'], facility['CH4'],
             facility['N2O']
         ]), 2)
         facility['totalGrhs'] = totalGrhs
-        facility.update(percent_deviation(fac_name, 'totalGrhs', totalGrhs))
+        facility_percent.update(percent_deviation(fac_name, 'totalGrhs', totalGrhs))
 
-    get_total_poll(compPoll, 'compressor')
-    get_total_poll(ppPoll, 'powerplant')
-    get_total_poll(boilPoll, 'boiler')
+    get_total_poll(compPoll, compPollPercent, 'compressor')
+    get_total_poll(ppPoll, ppPollPercent, 'powerplant')
+    get_total_poll(boilPoll, boilPollPercent, 'boiler')
 
     gasObj = Gas.objects.get()
     gasSer = GasSerArchive(gasObj)
@@ -243,4 +245,6 @@ def calculate_emission(request):
     Gas.objects.get().delete()
     Formulas.objects.filter().update(isConfirmed=False, date=None, user=None)
 
-    return get_response_environment()
+    return get_response_environment({'compressor': compPollPercent,
+                                     'powerplant': ppPollPercent,
+                                     'boiler': boilPollPercent})
