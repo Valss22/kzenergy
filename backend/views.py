@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 
 from backend.data_fields import fieldsDict
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
-
+from backend.services.archive import get_archive
 
 from backend.services.auth import *
 from backend.services.environment_department import get_calculated_formulas, update_formula, calculate_emission
@@ -93,25 +93,4 @@ class EnvironmentDepartmentView(APIView):
 class ArchiveView(APIView):
 
     def get(self, request):
-        role = request.query_params['role']
-
-        class ArchiveSerializer(ModelSerializer):
-            class Meta:
-                model = Archive
-                fields = (role,)
-
-            def to_representation(self, data):
-                data = super().to_representation(data)
-
-                if role in ['mining', 'EPWorker']:
-                    return data[role]
-
-                data2 = {}
-                for i in fieldsDict[role]:
-                    data2[i] = data[role][i]
-                return data2
-
-        archive = Archive.objects.all()
-        serializer = ArchiveSerializer(archive, many=True)
-
-        return Response(serializer.data.__reversed__())
+        return get_archive(request)
