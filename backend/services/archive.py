@@ -16,7 +16,7 @@ def get_percent_deviation(facility: str, field: str, curr_value: float):
 
         avg = total / len(archive)
         onePer = avg / 100
-        return (curr_value - avg) / onePer
+        return str(round((curr_value - avg) / onePer, 2))
 
     return None
 
