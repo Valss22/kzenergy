@@ -93,7 +93,8 @@ def get_response_environment():
         response.data = {'archive': archive.EPWorker}
         facilityPoll: dict = {}
 
-        for key, value in archive.EPWorker:
+        for key, value in archive.EPWorker.items():
+
             if key in ['compressor', 'powerplant', 'boiler']:
                 facilityPoll.update({key: value})
 
