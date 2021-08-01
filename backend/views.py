@@ -141,7 +141,7 @@ class MainView(APIView):
                 i += 1
 
             for key, value in massOfEmissions.items():
-                massOfEmissions[key] = parse_number(round(value / len(archive)))
+                massOfEmissions[key] = parse_number(round(value / len(archive), 2))
 
             avg = total / len(archive)
             return parse_number(round(avg, 2))
