@@ -140,8 +140,10 @@ class MainView(APIView):
                     total += arch.__dict__['EPWorker'][facility]['energy']
                 i += 1
 
-            avg = total / len(archive)
+            for key, value in massOfEmissions.items():
+                massOfEmissions[key] = parse_number(round(value / len(archive)))
 
+            avg = total / len(archive)
             return parse_number(round(avg, 2))
 
         response = Response()
@@ -157,7 +159,7 @@ class MainView(APIView):
                     update({'elems': [*massOfEmissions.values()]})
             order[f] = total
 
-        sortedOrder = dict(sorted(order.items(), key=lambda x: x[1]))
+        sortedOrder = dict(sorted(order.items()))
 
         response.data['graph1'].update({'order': [*sortedOrder]})
 
