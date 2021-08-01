@@ -11,7 +11,6 @@ def get_percent_deviation(facility: str, field: str, curr_value: float):
 
     if len(archive) > 1:
         for arch in archive:
-            print(arch.__dict__['EPWorker'][facility][field])
             total += arch.__dict__['EPWorker'][facility][field]
 
         avg = total / len(archive)
@@ -32,14 +31,10 @@ def get_percent_fields(facility_poll: {str: dict}, ) -> dict:
                            'powerplant': {},
                            'boiler': {}}
 
-    # print(facility_poll.keys())
-
     for fName in facility_poll.keys():
         for key, value in facility_poll[fName].items():
-            # print(key, type(value))
             facilityPollPercent[fName].update(percent_deviation(fName, key, value))
 
-    print(facilityPollPercent)
     return facilityPollPercent
 
 

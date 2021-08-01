@@ -1,7 +1,10 @@
+import operator
+
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from backend.data_fields import fieldsDict
+from backend.parsing import parse_number
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
 from backend.services.archive import get_archive
 
@@ -94,3 +97,68 @@ class ArchiveView(APIView):
 
     def get(self, request):
         return get_archive(request)
+
+
+class MainView(APIView):
+
+    def get(self, request):
+        getParams: dict = request.query_params
+        period = getParams['period']
+        emis = getParams['emis']
+
+        pollutants = ['NO2', 'NO', 'SO2', 'CO']
+        grhs = ['CO2', 'CH4', 'N2O']
+
+        massOfEmissions = {}
+
+        def get_total_emis(facility: str) -> float:
+            total = 0
+
+            archive = Archive.objects.all()
+            if period == 'last':
+                archive = [archive.last()]
+
+            i: int = 0
+            for arch in archive:
+                if emis == 'pollutants':
+                    total += arch.__dict__['EPWorker'][facility]['totalEmis']
+                    for el in pollutants:
+                        v = arch.__dict__['EPWorker'][facility][el]
+                        if i == 0:
+                            massOfEmissions[el] = v
+                        else:
+                            massOfEmissions[el] += v
+                elif emis == 'grhs':
+                    total += arch.__dict__['EPWorker'][facility]['totalGrhs']
+                    for el in grhs:
+                        v = arch.__dict__['EPWorker'][facility][el]
+                        if i == 0:
+                            massOfEmissions[el] = v
+                        else:
+                            massOfEmissions[el] += v
+                else:
+                    total += arch.__dict__['EPWorker'][facility]['energy']
+                i += 1
+
+            avg = total / len(archive)
+
+            return parse_number(round(avg, 2))
+
+        response = Response()
+        response.data = {'graph1': {}}
+
+        order = {}
+
+        for f in ['compressor', 'powerplant', 'boiler']:
+            total = get_total_emis(f)
+            response.data['graph1'][f] = {'total': total}
+            if emis != 'energy':
+                response.data['graph1'][f]. \
+                    update({'elems': [*massOfEmissions.values()]})
+            order[f] = total
+
+        sortedOrder = dict(sorted(order.items(), key=lambda x: x[1]))
+
+        response.data['graph1'].update({'order': [*sortedOrder]})
+
+        return response

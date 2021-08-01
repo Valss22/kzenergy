@@ -168,37 +168,20 @@ def calculate_emission(request):
                 round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2)),
         }
 
-    # def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
-    #     return {
-    #         field + '%': get_percent_deviation(facility, field, curr_value)
-    #     }
-
     compPoll = facility_pollutants(Vcomp)
-    # compPollPercent = {}
-    # for key, value in compPoll.items():
-    #     compPollPercent.update(percent_deviation('compressor', key, value))
 
     ppPoll = facility_pollutants(Vpp)
-    # ppPollPercent = {}
-    # for key, value in ppPoll.items():
-    #     ppPollPercent.update(percent_deviation('powerplant', key, value))
 
     boilPoll = facility_pollutants(Vboil)
-    # boilPollPercent = {}
-    # for key, value in boilPoll.items():
-    #     boilPollPercent.update(percent_deviation('boiler', key, value))
 
     compEnergy = round(Vcomp / comp.volumeOfInjectedGas, 2)
     compPoll['energy'] = compEnergy
-    #compPollPercent.update(percent_deviation('compressor', 'energy', compEnergy))
 
     ppEnergy = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
     ppPoll['energy'] = ppEnergy
-    #ppPollPercent.update(percent_deviation('powerplant', 'energy', ppEnergy))
 
     boilEnergy = round(Vboil / boil.steamVolume, 2)
     boilPoll['energy'] = boilEnergy
-    #boilPollPercent.update(percent_deviation('boiler', 'energy', boilEnergy))
 
     def get_total_poll(facility):
         totalEmis = round(sum([
@@ -206,14 +189,12 @@ def calculate_emission(request):
             facility['SO2'], facility['CO']
         ]), 2)
         facility['totalEmis'] = totalEmis
-        #facility_percent.update(percent_deviation(fac_name, 'totalEmis', totalEmis))
 
         totalGrhs = round(sum([
             facility['CO2'], facility['CH4'],
             facility['N2O']
         ]), 2)
         facility['totalGrhs'] = totalGrhs
-        #facility_percent.update(percent_deviation(fac_name, 'totalGrhs', totalGrhs))
 
     get_total_poll(compPoll)
     get_total_poll(ppPoll)
@@ -250,6 +231,7 @@ def calculate_emission(request):
     )
 
     Gas.objects.get().delete()
-    Formulas.objects.filter().update(isConfirmed=False, date=None, user=None)
+    Formulas.objects. \
+        filter().update(isConfirmed=False, date=None, user=None)
 
     return get_response_environment()

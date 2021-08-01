@@ -19,7 +19,7 @@ def parse_date(date: str) -> str or None:
     return date.split('.')[0][:-3]
 
 
-def parse_number(num: int) -> int:
+def parse_number(num: float) -> float:
     if num % 1 == 0:
         return int(num)
     else:
