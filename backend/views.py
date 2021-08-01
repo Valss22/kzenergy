@@ -159,7 +159,7 @@ class MainView(APIView):
                     update({'elems': [*massOfEmissions.values()]})
             order[f] = total
 
-        sortedOrder = dict(sorted(order.items()))
+        sortedOrder = dict(sorted(order.items(), key=lambda x: x[1]))
 
         response.data['graph1'].update({'order': [*sortedOrder]})
 
