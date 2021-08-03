@@ -17,7 +17,7 @@ def get_graph1(get_params) -> dict:
         total = 0
         archive = Archive.objects.all()
 
-        if not archive.exists():
+        if len(archive) == 0:
             return 0
 
         if period == 'last':
