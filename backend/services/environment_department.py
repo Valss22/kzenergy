@@ -207,7 +207,8 @@ def calculate_emission(request):
 
     import cloudinary.uploader
     create_excel(**get_data_for_excel())
-    excel = cloudinary.uploader.upload('report.xlsx', resource_type='auto')
+    excel = cloudinary.uploader.\
+        upload('report.xlsx', resource_type='auto')
 
     environment = {
         'user': {
@@ -230,8 +231,11 @@ def calculate_emission(request):
         EPWorker=environment
     )
 
-    # Gas.objects.get().delete()
-    # Formulas.objects. \
-    #     filter().update(isConfirmed=False, date=None, user=None)
+    Gas.objects.get().delete()
+    Formulas.objects.filter()\
+        .update(
+        isConfirmed=False,
+        date=None, user=None
+    )
 
     return get_response_environment()
