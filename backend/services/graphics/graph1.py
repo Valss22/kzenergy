@@ -23,10 +23,10 @@ def get_graph1(get_params) -> dict:
         if period == 'last':
             archive = [archive.last()]
 
-        def add_total_emis(elems: list[str]):
+        def add_total_emis(type_emis: str, elems: list[str]):
             nonlocal total
             facData = arch.__dict__['EPWorker'][facility]
-            total += facData['totalEmis']
+            total += facData[type_emis]
             for el in elems:
                 v = facData[el]
                 if i == 0:
@@ -37,9 +37,9 @@ def get_graph1(get_params) -> dict:
         i: int = 0
         for arch in archive:
             if emis == 'pollutants':
-                add_total_emis(pollutants)
+                add_total_emis('totalEmis', pollutants)
             elif emis == 'grhs':
-                add_total_emis(grhs)
+                add_total_emis('totalGrhs', grhs)
             else:
                 total += arch.__dict__['EPWorker'][facility]['energy']
             i += 1
