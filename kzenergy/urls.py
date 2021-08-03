@@ -21,7 +21,7 @@ urlpatterns = [
                   path('mining/', MiningDepartmentView.as_view()),
                   path('environment/', EnvironmentDepartmentView.as_view()),
                   path('archive/', ArchiveView.as_view()),
-                  path('main/', MainView.as_view()),
+                  path('main/', GraphView.as_view()),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

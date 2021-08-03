@@ -22,18 +22,21 @@ def get_percent_deviation(facility: str, field: str, curr_value: float):
 
 def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
     return {
-        field + '%': get_percent_deviation(facility, field, curr_value)
+        field + '%': get_percent_deviation
+        (facility, field, curr_value)
     }
 
 
-def get_percent_fields(facility_poll: {str: dict}, ) -> dict:
+def get_percent_fields(facility_poll: {str: dict}) -> dict:
     facilityPollPercent = {'compressor': {},
                            'powerplant': {},
                            'boiler': {}}
 
     for fName in facility_poll.keys():
         for key, value in facility_poll[fName].items():
-            facilityPollPercent[fName].update(percent_deviation(fName, key, value))
+            facilityPollPercent[fName].update(
+                percent_deviation(fName, key, value)
+            )
 
     return facilityPollPercent
 

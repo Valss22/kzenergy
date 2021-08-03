@@ -230,8 +230,8 @@ def calculate_emission(request):
         EPWorker=environment
     )
 
-    Gas.objects.get().delete()
-    Formulas.objects. \
-        filter().update(isConfirmed=False, date=None, user=None)
+    # Gas.objects.get().delete()
+    # Formulas.objects. \
+    #     filter().update(isConfirmed=False, date=None, user=None)
 
     return get_response_environment()
