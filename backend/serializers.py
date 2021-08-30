@@ -3,16 +3,22 @@ from backend.models import *
 from backend.parsing import parse_date, parse_number
 
 
-class UserProfileSerializer(ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ('excel',)
-
-
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('fullName', 'id')
+
+
+class AllUsersSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ('password',)
+
+
+class AvatarSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('avatar',)
 
 
 class FacilitySerializer(ModelSerializer):

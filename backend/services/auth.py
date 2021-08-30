@@ -3,7 +3,9 @@ import jwt
 import bcrypt
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.serializers import ModelSerializer
 
+from backend.serializers import AvatarSerializer
 from kzenergy import settings
 from backend.models import *
 from kzenergy.settings import SALT
@@ -14,22 +16,25 @@ class AuthResponce:
         email = request.data['email']
         access = jwt.encode(payload_access,
                             settings.ACCESS_SECRET_KEY, algorithm='HS256')
-        # refresh = jwt.encode(payload_refresh,
-        #                      settings.REFRESH_SECRET_KEY, algorithm='HS256')
-        # refresh = str(refresh)[2:-1]
         self.response = Response()
-        # self.response.set_cookie(key='refresh', value=refresh, httponly=True)
         self.response.data = {
             'id': User.objects.get(email=email).id,
             'access': access,
-            'email': email
+            'email': email,
         }
-        if 'role' and 'fullName' in request.data.keys():
+        sign_in = bool('role' and 'fullName' in request.data.keys())
+        if sign_in:
             self.response.data.update({'role': request.data['role'],
-                                       'fullName': request.data['fullName']})
+                                       'fullName': request.data['fullName'],
+                                       'avatar': None, 'phone': None})
         else:
+
             user = User.objects.get(email=email)
-            d = {'role': user.role, 'fullName': user.fullName}
+            serializer = AvatarSerializer(user)
+            avatar = serializer.data['avatar']
+
+            d = {'role': user.role, 'fullName': user.fullName,
+                 'avatar': avatar, 'phone': user.phone}
             self.response.data.update(d)
 
 
@@ -45,19 +50,15 @@ class UserData:
             'email': self.email,
             'exp': time.time() + 1_728_000
         }
-        # self.payload_refresh = {
-        #     'email': self.email,
-        #     'exp': time.time() + 86400
-        # }
 
 
 def create_user(user: UserData, request) -> Response:
     if not validate_role(user.role):
         return Response({'error': f'{user.role} is not an existing role'}, status.HTTP_400_BAD_REQUEST)
+
     userObj = User.objects.create(fullName=user.fullName, email=user.email,
                                   password=user.password, role=user.role)
     userObj.save()
-    # UserRefreshToken.objects.create(user=userObj, refresh=request.COOKIES['refresh'])
     authResponce = AuthResponce(user.payload_access, request)
     return authResponce.response
 
