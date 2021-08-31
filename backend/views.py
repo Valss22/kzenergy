@@ -11,10 +11,9 @@ from backend.services.environment_department import get_calculated_formulas, upd
 
 from backend.services.facility import create_facility, get_facility, set_refusal_data, edit_data
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
-from backend.services.graphics.graph1 import get_graph1
 from backend.services.graphics.main import get_main
 from backend.services.mining_department import get_summary_data, sign_report
-from backend.services.user_profile import update_avatar, update_phone, update_profile
+from backend.services.user_profile import  update_profile
 
 
 class SignInView(APIView):
