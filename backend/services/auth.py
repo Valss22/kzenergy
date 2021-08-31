@@ -8,7 +8,7 @@ from rest_framework.serializers import ModelSerializer
 from backend.serializers import AvatarSerializer
 from kzenergy import settings
 from backend.models import *
-from kzenergy.settings import SALT
+from kzenergy.settings import SALT, PRE_URL
 
 
 class AuthResponce:
@@ -33,7 +33,7 @@ class AuthResponce:
             avatar = serializer.data['avatar']
 
             d = {'role': user.role, 'fullName': user.fullName,
-                 'avatar': avatar, 'phone': user.phone}
+                 'avatar': PRE_URL + avatar, 'phone': user.phone}
             self.response.data.update(d)
 
 

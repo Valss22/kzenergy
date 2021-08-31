@@ -4,6 +4,8 @@ from backend.serializers import AvatarSerializer
 from backend.services.auth import get_current_user
 import cloudinary.uploader
 
+from kzenergy.settings import PRE_URL
+
 
 def update_profile(request):
     if 'avatar' in request.data:
@@ -19,8 +21,7 @@ def update_avatar(request):
     current_user.avatar = changed_avatar
     current_user.save()
     serializer = AvatarSerializer(current_user)
-    #pre_url = 'https://res.cloudinary.com/dmh0ekjaw/'
-    return Response({'avatar': serializer.data['avatar']['secure_url']})
+    return Response({'avatar': PRE_URL + serializer.data['avatar']})
 
 
 def update_phone(request):
