@@ -1,3 +1,4 @@
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -111,5 +112,7 @@ class UserViewSet(ReadOnlyModelViewSet):
 
 
 class UserProfileView(APIView):
+    parser_classes = [FormParser, MultiPartParser]
+
     def patch(self, request):
         return update_profile(request)

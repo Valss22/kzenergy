@@ -28,7 +28,6 @@ class AuthResponce:
                                        'fullName': request.data['fullName'],
                                        'avatar': None, 'phone': None})
         else:
-
             user = User.objects.get(email=email)
             serializer = AvatarSerializer(user)
             avatar = serializer.data['avatar']
