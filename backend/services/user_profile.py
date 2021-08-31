@@ -14,7 +14,7 @@ def update_profile(request):
 
 def update_avatar(request):
     current_user = get_current_user(request)
-    changed_avatar = cloudinary.uploader.upload(request.data['avatar'])
+    changed_avatar = cloudinary.uploader.upload(request.data['avatar']['data'])
     current_user.avatar = changed_avatar
     current_user.save()
     serializer = AvatarSerializer(current_user)
