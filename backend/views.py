@@ -13,7 +13,7 @@ from backend.services.facility import create_facility, get_facility, set_refusal
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.graphics.main import get_main
 from backend.services.mining_department import get_summary_data, sign_report
-from backend.services.user_profile import  update_profile
+from backend.services.user_profile import update_profile, update_avatar, update_phone
 
 
 class SignInView(APIView):
@@ -110,8 +110,14 @@ class UserViewSet(ReadOnlyModelViewSet):
     serializer_class = AllUsersSerializer
 
 
-class UserProfileView(APIView):
+class UserProfileAvatarView(APIView):
     parser_classes = [FormParser, MultiPartParser]
 
     def patch(self, request):
-        return update_profile(request)
+        return update_avatar(request)
+
+
+class UserProfilePhoneView(APIView):
+
+    def patch(self, request):
+        return update_phone(request)

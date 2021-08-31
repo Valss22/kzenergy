@@ -2,21 +2,20 @@ from rest_framework.response import Response
 
 from backend.serializers import AvatarSerializer
 from backend.services.auth import get_current_user
-import cloudinary.uploader
+
 
 from kzenergy.settings import PRE_URL
 
 
-def update_profile(request):
-    if 'avatar' in request.data:
-        return update_avatar(request)
-    else:
-        return update_phone(request)
+# def update_profile(request):
+#     if 'avatar' in request.data:
+#         return update_avatar(request)
+#     else:
+#         return update_phone(request)
 
 
 def update_avatar(request):
     current_user = get_current_user(request)
-    # changed_avatar = cloudinary.uploader.upload(request.data['avatar']['data'])
     changed_avatar = request.data['avatar']
     current_user.avatar = changed_avatar
     current_user.save()
