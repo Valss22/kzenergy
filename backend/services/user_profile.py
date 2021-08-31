@@ -19,7 +19,8 @@ def update_avatar(request):
     current_user.avatar = changed_avatar
     current_user.save()
     serializer = AvatarSerializer(current_user)
-    return Response({'avatar': serializer.data['avatar']['secure_url']})
+    pre_url = 'https://res.cloudinary.com/dmh0ekjaw/'
+    return Response({'avatar': pre_url + serializer.data['avatar']})
 
 
 def update_phone(request):
