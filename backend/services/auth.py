@@ -31,11 +31,14 @@ class AuthResponce:
             user = User.objects.get(email=email)
             serializer = AvatarSerializer(user)
             avatar = serializer.data['avatar']
-
-            d = {'role': user.role, 'fullName': user.fullName,
-                 'avatar': PRE_URL + avatar, 'phone': user.phone}
-            self.response.data.update(d)
-
+            if avatar is None:
+                d = {'role': user.role, 'fullName': user.fullName,
+                     'avatar': None, 'phone': user.phone}
+                self.response.data.update(d)
+            else:
+                d = {'role': user.role, 'fullName': user.fullName,
+                     'avatar': PRE_URL + avatar, 'phone': user.phone}
+                self.response.data.update(d)
 
 class UserData:
     def __init__(self, request):
