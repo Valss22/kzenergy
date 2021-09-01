@@ -13,7 +13,7 @@ class User(models.Model):
     role = models.CharField(max_length=100, null=True)
     password = models.CharField(max_length=128, null=True)
     avatar = CloudinaryField(null=True)
-    phone = models.CharField(max_length=10, null=True)
+    phone = models.CharField(max_length=13, null=True)
 
     def __str__(self):
         return f'{self.fullName}'
