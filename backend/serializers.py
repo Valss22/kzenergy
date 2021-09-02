@@ -15,11 +15,11 @@ class AllUsersSerializer(ModelSerializer):
         model = User
         exclude = ('password',)
 
-    def to_representation(self, data):
-        data = super().to_representation(data)
-        if data['avatar']:
-            data['avatar'] = PRE_URL + data['avatar']
-        return data
+    # def to_representation(self, data):
+    #     data = super().to_representation(data)
+    #     if data['avatar']:
+    #         data['avatar'] = PRE_URL + data['avatar']
+    #     return data
 
 
 class AvatarSerializer(ModelSerializer):

@@ -9,12 +9,14 @@ from django.conf.urls.static import static
 
 router = SimpleRouter()
 
-router.register(r'user/list', UserViewSet)
+#router.register(r'user/list', UserViewSet, basename='UsersList')
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('user/register/', SignInView.as_view()),
                   path('user/login/', LoginView.as_view()),
+                  path('user/list/<int:pk>/', UserListView.as_view()),
+                  path('user/list/', UserListView.as_view()),
                   path('user/update/avatar/', UserProfileAvatarView.as_view()),
                   path('user/update/phone/', UserProfilePhoneView.as_view()),
                   path('object/compressor/', FacilityView.as_view()),

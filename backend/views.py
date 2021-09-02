@@ -106,8 +106,25 @@ class GraphView(APIView):
 
 
 class UserViewSet(ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = AllUsersSerializer
+    pass
+
+
+class UserListView(APIView):
+    def get(self, request, pk=None):
+        if pk:
+            try:
+                user = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response({'error': 'user does not exist'},
+                                status.HTTP_400_BAD_REQUEST)
+
+            serializer = AllUsersSerializer(user)
+            return Response(serializer.data)
+
+        current_user = get_current_user(request)
+        queryset = User.objects.exclude(email=current_user.email)
+        serializer = AllUsersSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class UserProfileAvatarView(APIView):
