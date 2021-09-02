@@ -3,7 +3,6 @@ import jwt
 import bcrypt
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.serializers import ModelSerializer
 
 from backend.serializers import AvatarSerializer
 from kzenergy import settings
@@ -31,14 +30,23 @@ class AuthResponce:
             user = User.objects.get(email=email)
             serializer = AvatarSerializer(user)
             avatar = serializer.data['avatar']
-            if avatar is None:
-                d = {'role': user.role, 'fullName': user.fullName,
-                     'avatar': None, 'phone': user.phone}
-                self.response.data.update(d)
-            else:
-                d = {'role': user.role, 'fullName': user.fullName,
-                     'avatar': PRE_URL + avatar, 'phone': user.phone}
-                self.response.data.update(d)
+
+            # if avatar is None:  # TODO: красоту навести
+            #     d = {'role': user.role, 'fullName': user.fullName,
+            #          'avatar': None, 'phone': user.phone}
+            #     self.response.data.update(d)
+            # else:
+            #     d = {'role': user.role, 'fullName': user.fullName,
+            #          'avatar': PRE_URL + avatar, 'phone': user.phone}
+            #     self.response.data.update(d)
+
+            if avatar:
+                avatar = PRE_URL + avatar
+
+            d = {'role': user.role, 'fullName': user.fullName,
+                 'avatar': avatar, 'phone': user.phone}
+            self.response.data.update(d)
+
 
 class UserData:
     def __init__(self, request):

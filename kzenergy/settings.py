@@ -14,7 +14,6 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-^yk0a#!!l^ozzxqn_nk#pa2gji&r=502auurnh5zd605@d@2ln'
 
 ACCESS_SECRET_KEY = '+gs88jj41i#v(##0^+v)$xmvfoo(cazi))l-7&e9w32-n3j(bw'
-# REFRESH_SECRET_KEY = 'nsl7(*i^0z!xj0wy58hq)lda42esc-p%o@x&8av80^vzlaqf5j'
 
 IDENTIFICATION_KEY = '@)0xs2)&by1z9b0yay_4n7y!45y2k(=zqypay%=bn&0n3pk^t8'
 

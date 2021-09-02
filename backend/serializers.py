@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from backend.models import *
 from backend.parsing import parse_date, parse_number
+from kzenergy.settings import PRE_URL
 
 
 class UserSerializer(ModelSerializer):
@@ -13,6 +14,12 @@ class AllUsersSerializer(ModelSerializer):
     class Meta:
         model = User
         exclude = ('password',)
+
+    def to_representation(self, data):
+        data = super().to_representation(data)
+        if data['avatar']:
+            data['avatar'] = PRE_URL + data['avatar']
+        return data
 
 
 class AvatarSerializer(ModelSerializer):
