@@ -9,7 +9,6 @@ from django.conf.urls.static import static
 
 router = SimpleRouter()
 
-#router.register(r'user/list', UserViewSet, basename='UsersList')
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
