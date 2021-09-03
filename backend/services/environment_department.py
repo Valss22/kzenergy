@@ -18,7 +18,8 @@ def get_status_environment(facilities: dict):
             obj = value.objects.get()
             if obj.user:
                 obj.date = parse_date(obj.date)
-                response.data[key] = {'fullName': obj.user.fullName}
+                response.data[key] = {'fullName': obj.user.fullName,
+                                      'id': obj.user.id}
                 response.data[key]['date'] = obj.date
             else:
                 response.data[key] = None
