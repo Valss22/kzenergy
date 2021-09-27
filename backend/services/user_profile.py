@@ -3,15 +3,7 @@ from rest_framework.response import Response
 from backend.serializers import AvatarSerializer
 from backend.services.auth import get_current_user
 
-
 from kzenergy.settings import PRE_URL
-
-
-# def update_profile(request):
-#     if 'avatar' in request.data:
-#         return update_avatar(request)
-#     else:
-#         return update_phone(request)
 
 
 def update_avatar(request):
