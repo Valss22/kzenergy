@@ -16,22 +16,22 @@ def get_graph2(get_params) -> dict:
     }
 
     if facility != 'energy':
-        totalPoll = [parse_number(i.EPWorker[facility]['totalEmis']) for i in archive]
-        totalPoll.reverse()
-        totalGrhs = [parse_number(i.EPWorker[facility]['totalGrhs']) for i in archive]
-        totalGrhs.reverse()
+        total_poll = [parse_number(i.EPWorker[facility]['totalEmis']) for i in archive]
+        total_poll.reverse()
+        total_grhs = [parse_number(i.EPWorker[facility]['totalGrhs']) for i in archive]
+        total_grhs.reverse()
         response['graph2'].update({
-            'total1': totalPoll,
-            'total2': totalGrhs
+            'total1': total_poll,
+            'total2': total_grhs
         })
     else:
         n: int = 1
         for f in ['compressor', 'powerplant', 'boiler']:
-            energyArr = [parse_number(i.EPWorker[f]['energy']) for i in archive]
-            energyArr.reverse()
-            response['graph2'].update({
-                'total' + str(n): energyArr
-            })
+            energy_arr = [parse_number(i.EPWorker[f]['energy']) for i in archive]
+            energy_arr.reverse()
+            response['graph2'].update(
+                {'total' + str(n): energy_arr}
+            )
             n += 1
 
     return response

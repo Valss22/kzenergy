@@ -17,22 +17,25 @@ def get_gas_name(facility_name: str):
 
 def get_gas(request):
     try:
-        gasName = request.query_params['gasName']
-        obj = Gas.objects.get(gasName=gasName)
+        gas_name = request.query_params['gasName']
+        obj = Gas.objects.get(gasName=gas_name)
         serializer = GasSerAllField(obj)
-        return Response(serializer.data, status.HTTP_200_OK)
+
+        return Response(
+            serializer.data, status.HTTP_200_OK
+        )
     except Gas.DoesNotExist:
         return Response({'date': None})
 
 
 def update_gas(request):
-    gasName = request.data['gasName']
-    obj = Gas.objects.filter(gasName=gasName)
+    gas_name = request.data['gasName']
+    obj = Gas.objects.filter(gasName=gas_name)
     obj.update(**request.data)
     gas = Gas.objects.get(gasName=request.data['gasName'])
-    currentUser = get_current_user(request)
+    current_user = get_current_user(request)
     gas.date = datetime.datetime.now()
-    gas.user = currentUser
+    gas.user = current_user
     gas.save()
 
 
@@ -42,37 +45,41 @@ def create_gas(request):
     else:
         obj = Gas(**request.data)
         obj.date = datetime.datetime.now()
-        currentUser = get_current_user(request)
-        obj.user = currentUser
+        current_user = get_current_user(request)
+        obj.user = current_user
         obj.save()
     try:
-        obj = Gas.objects.get(gasName=request.data['gasName'])
+        obj = Gas.objects.get(
+            gasName=request.data['gasName']
+        )
         serializer = GasSerAllField(obj)
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response(
+            serializer.data, status.HTTP_200_OK
+        )
     except Gas.DoesNotExist:
         return Response({'date': None})
 
 
 def set_refusal_gas_data(request):
-    refusalData = get_refusal_data(request)
-    gasName = request.data['gasName']
-    Gas.objects.filter(gasName=gasName) \
-        .update(refusalData=refusalData, date=None,
+    refusal_data = get_refusal_data(request)
+    gas_name = request.data['gasName']
+    Gas.objects.filter(gasName=gas_name) \
+        .update(refusalData=refusal_data, date=None,
                 user=None, isEdited=False)
     return get_summary_data()
 
 
 def edit_gas_data(request):
-    gasName = request.data['gasName']
-    obj = Gas.objects.filter(gasName=gasName)
+    gas_name = request.data['gasName']
+    obj = Gas.objects.filter(gasName=gas_name)
     obj.update(**request.data)
-    obj = Gas.objects.get(gasName=gasName)
-    currentUser = get_current_user(request)
+    obj = Gas.objects.get(gasName=gas_name)
+    current_user = get_current_user(request)
     obj.date = datetime.datetime.now()
-    obj.user = currentUser
+    obj.user = current_user
     obj.isEdited = True
     obj.refusalData = {'date': None}
     obj.save()
-    obj = Gas.objects.get(gasName=gasName)
+    obj = Gas.objects.get(gasName=gas_name)
     serializer = GasSerAllField(obj)
     return Response(serializer.data, status.HTTP_200_OK)

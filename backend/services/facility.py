@@ -34,20 +34,20 @@ class FacilityRequest:
         path = request.get_full_path()
         if path == '/object/compressor/':
             cls.model = Compressor
-            cls.modelSerializer = FacilityRequest.CompSer
+            cls.model_serializer = FacilityRequest.CompSer
         elif path == '/object/powerplant/':
             cls.model = PowerPlant
-            cls.modelSerializer = FacilityRequest.PPSer
+            cls.model_serializer = FacilityRequest.PPSer
         else:
             cls.model = Boiler
-            cls.modelSerializer = FacilityRequest.BoilSer
+            cls.model_serializer = FacilityRequest.BoilSer
 
 
 def get_facility(cls, request) -> Response:
     FacilityRequest(cls, request)
     try:
         obj = cls.model.objects.get()
-        serializer = cls.modelSerializer(obj)
+        serializer = cls.model_serializer(obj)
         return Response(serializer.data, status.HTTP_200_OK)
     except cls.model.DoesNotExist:
         return Response({'date': None})
@@ -57,20 +57,22 @@ def create_facility(cls, request) -> Response:
     path = request.get_full_path()
 
     FacilityRequest(cls, request)
-    facilityName = path.split('/')[2]
+    facility_name = path.split('/')[2]
 
-    gasName = get_gas_name(facilityName)
-    gasComposition = Gas.objects.get_or_create(gasName=gasName)[0]
+    gas_name = get_gas_name(facility_name)
+    gas_composition = Gas.objects.get_or_create(gasName=gas_name)[0]
 
     obj = cls.model(**request.data)
     obj.date = datetime.datetime.now()
-    obj.gasComposition = gasComposition
-    gasComposition.save()
+    obj.gasComposition = gas_composition
+    gas_composition.save()
 
     token = request.headers['Authorization'].split(' ')[1]
-    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-    currentUser = User.objects.get(email=dataToken['email'])
-    obj.user = currentUser
+    data_token = jwt.decode(
+        token, settings.ACCESS_SECRET_KEY, algorithms='HS256'
+    )
+    current_user = User.objects.get(email=data_token['email'])
+    obj.user = current_user
     obj.save()
 
     return get_facility(cls, request)
@@ -78,9 +80,10 @@ def create_facility(cls, request) -> Response:
 
 def set_refusal_data(cls, request):
     FacilityRequest(cls, request)
-    refusalData = get_refusal_data(request)
-    cls.model.objects.all().update(refusalData=refusalData, user=None,
-                                   date=None, isEdited=False)
+    refusal_data = get_refusal_data(request)
+    cls.model.objects.all().update(
+        refusalData=refusal_data, user=None, date=None, isEdited=False
+    )
     return get_summary_data()
 
 
@@ -89,12 +92,12 @@ def edit_data(cls, request) -> Response:
     obj = cls.model.objects.all()
     obj.update(**request.data)
     obj = cls.model.objects.get()
-    currentUser = get_current_user(request)
+    current_user = get_current_user(request)
     obj.date = datetime.datetime.now()
-    obj.user = currentUser
+    obj.user = current_user
     obj.isEdited = True
     obj.refusalData = {'date': None}
     obj.save()
     obj = cls.model.objects.get()
-    serializer = cls.modelSerializer(obj)
+    serializer = cls.model_serializer(obj)
     return Response(serializer.data, status.HTTP_200_OK)

@@ -27,55 +27,59 @@ class FacSerData:
 
 
 def get_summary_data() -> Response:
-    compObj = Compressor.objects.all().first()
-    ppObj = PowerPlant.objects.all().first()
-    boilObj = Boiler.objects.all().first()
+    comp_obj = Compressor.objects.all().first()
+    pp_obj = PowerPlant.objects.all().first()
+    boil_obj = Boiler.objects.all().first()
 
-    compSer = FacSerData(Compressor,
-                         CompSerTwoField,
-                         compObj, CompSerAllField,
-                         CompSerOneField)
+    comp_ser = FacSerData(
+        Compressor, CompSerTwoField, comp_obj,
+        CompSerAllField, CompSerOneField
+    )
 
-    compSer = compSer.facSer
+    comp_ser = comp_ser.facSer
 
-    ppSer = FacSerData(PowerPlant, PPSerTwoField,
-                       ppObj, PPSerAllField,
-                       PPSerOneField)
+    pp_ser = FacSerData(
+        PowerPlant, PPSerTwoField,
+        pp_obj, PPSerAllField,
+        PPSerOneField
+    )
 
-    ppSer = ppSer.facSer
+    pp_ser = pp_ser.facSer
 
-    boilSer = FacSerData(Boiler, BoilSerTwoField,
-                         boilObj, BoilSerAllField,
-                         BoilSerOneField)
+    boil_ser = FacSerData(
+        Boiler, BoilSerTwoField,
+        boil_obj, BoilSerAllField,
+        BoilSerOneField
+    )
 
-    boilSer = boilSer.facSer
+    boil_ser = boil_ser.facSer
 
-    gasNames = [obj.gasName for obj in Gas.objects.all()]
+    gas_names = [obj.gasName for obj in Gas.objects.all()]
 
-    gasDict = {}
+    gas_dict = {}
 
-    for i in gasNames:
-        gasObj = Gas.objects.get(gasName=i)
+    for i in gas_names:
+        gas_obj = Gas.objects.get(gasName=i)
 
-        if not gasObj.date:
+        if not gas_obj.date:
             class GasSer(ModelSerializer):
                 class Meta:
                     model = Gas
                     fields = ('date', 'refusalData')
 
-            gasSer = GasSer(gasObj)
-            gasDict[i] = gasSer.data
+            gas_ser = GasSer(gas_obj)
+            gas_dict[i] = gas_ser.data
             continue
 
-        gasSer = GasSerAllField(gasObj)
-        gasDict[i] = gasSer.data
+        gas_ser = GasSerAllField(gas_obj)
+        gas_dict[i] = gas_ser.data
 
-    if not gasDict:
-        gasDict['sweetGas'] = {'date': None}
+    if not gas_dict:
+        gas_dict['sweetGas'] = {'date': None}
 
     user = Formulas.objects.get().user
     date = Formulas.objects.get().date
-    isConfirmed = Formulas.objects.get().isConfirmed
+    is_confirmed = Formulas.objects.get().isConfirmed
 
     if user:
         user = {'fullName': user.fullName,
@@ -86,10 +90,10 @@ def get_summary_data() -> Response:
     responce = Response()
 
     responce.data = {
-        'compressor': compSer.data,
-        'powerplant': ppSer.data,
-        'boiler': boilSer.data,
-        'gases': gasDict,
+        'compressor': comp_ser.data,
+        'powerplant': pp_ser.data,
+        'boiler': boil_ser.data,
+        'gases': gas_dict,
     }
 
     count: int = 0
@@ -107,26 +111,27 @@ def get_summary_data() -> Response:
                         count += 1
                         break
 
-    isConfirmable = True
+    is_confirmable = True
 
-    if (count != len(responce.data.keys())) or isConfirmed:
-        isConfirmable = False
+    if (count != len(responce.data.keys())) or is_confirmed:
+        is_confirmable = False
 
-    confirmData = {
+    confirm_data = {
         'user': user,
         'date': date,
-        'isConfirmed': isConfirmed,
-        'isConfirmable': isConfirmable
+        'isConfirmed': is_confirmed,
+        'isConfirmable': is_confirmable
     }
 
-    responce.data['confirmData'] = confirmData
+    responce.data['confirmData'] = confirm_data
 
     return responce
 
 
 def sign_report(request):
-    currentUser = get_current_user(request)
-    Formulas.objects.all().update(user=currentUser,
-                                  date=datetime.datetime.now(),
-                                  isConfirmed=True)
+    current_user = get_current_user(request)
+    Formulas.objects.all().update(
+        user=current_user, date=datetime.datetime.now(),
+        isConfirmed=True
+    )
     return get_summary_data()

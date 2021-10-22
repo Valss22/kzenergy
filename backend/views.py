@@ -1,9 +1,8 @@
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
+
 
 from backend.permissions import IsAuth, IsRightRole, enable_to_edit, enable_to_create, enable_to_edit_gas
-from backend.serializers import AllUsersSerializer
 from backend.services.archive import get_archive
 
 from backend.services.auth import *
@@ -13,7 +12,7 @@ from backend.services.facility import create_facility, get_facility, set_refusal
 from backend.services.gas import create_gas, get_gas, set_refusal_gas_data, edit_gas_data
 from backend.services.graphics.main import get_main
 from backend.services.mining_department import get_summary_data, sign_report
-from backend.services.user_profile import update_avatar, update_phone
+from backend.services.user_profile import update_avatar, update_phone, get_users
 
 
 class SignInView(APIView):
@@ -32,7 +31,7 @@ class FacilityView(APIView):
     permission_classes = [IsAuth, IsRightRole]
 
     model: models.Model
-    modelSerializer: models.Model
+    model_serializer: models.Model
 
     @classmethod
     def get(cls, request):
@@ -105,26 +104,9 @@ class GraphView(APIView):
         return get_main(request)
 
 
-class UserViewSet(ReadOnlyModelViewSet):
-    pass
-
-
 class UserListView(APIView):
     def get(self, request, pk=None):
-        if pk:
-            try:
-                user = User.objects.get(id=pk)
-            except User.DoesNotExist:
-                return Response({'error': 'user does not exist'},
-                                status.HTTP_400_BAD_REQUEST)
-
-            serializer = AllUsersSerializer(user)
-            return Response(serializer.data)
-
-        current_user = get_current_user(request)
-        queryset = User.objects.exclude(email=current_user.email)
-        serializer = AllUsersSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return get_users(request, pk)
 
 
 class UserProfileAvatarView(APIView):
@@ -138,5 +120,3 @@ class UserProfilePhoneView(APIView):
 
     def patch(self, request):
         return update_phone(request)
-
-

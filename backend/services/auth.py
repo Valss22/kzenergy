@@ -31,15 +31,6 @@ class AuthResponce:
             serializer = AvatarSerializer(user)
             avatar = serializer.data['avatar']
 
-            # if avatar is None:  # TODO: красоту навести
-            #     d = {'role': user.role, 'fullName': user.fullName,
-            #          'avatar': None, 'phone': user.phone}
-            #     self.response.data.update(d)
-            # else:
-            #     d = {'role': user.role, 'fullName': user.fullName,
-            #          'avatar': PRE_URL + avatar, 'phone': user.phone}
-            #     self.response.data.update(d)
-
             if avatar:
                 avatar = PRE_URL + avatar
 
@@ -64,41 +55,67 @@ class UserData:
 
 def create_user(user: UserData, request) -> Response:
     if not validate_role(user.role):
-        return Response({'error': f'{user.role} is not an existing role'}, status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': f'{user.role} is not an existing role'},
+            status.HTTP_400_BAD_REQUEST
+        )
 
-    userObj = User.objects.create(fullName=user.fullName, email=user.email,
-                                  password=user.password, role=user.role)
-    userObj.save()
-    authResponce = AuthResponce(user.payload_access, request)
-    return authResponce.response
+    user_obj = User.objects.create(
+        fullName=user.fullName, email=user.email,
+        password=user.password, role=user.role
+    )
+
+    user_obj.save()
+    auth_responce = AuthResponce(user.payload_access, request)
+    return auth_responce.response
 
 
 def sign_in(request):
     user = UserData(request)
     try:
         User.objects.get(email=user.email)
-        return Response({'error': 'User already exist'}, status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': 'User already exist'},
+            status.HTTP_400_BAD_REQUEST
+        )
     except User.DoesNotExist:
         if request.data['identificationKey'] == settings.IDENTIFICATION_KEY:
             return create_user(user, request)
-        return Response({'error': 'Registration failed'}, status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': 'Registration failed'},
+            status.HTTP_400_BAD_REQUEST
+        )
 
 
 def login(request):
     user = UserData(request)
     try:
-        hashed_pass = User.objects.get(email=request.data['email']).password[2:-1].encode()
+        hashed_pass = User.objects.get(
+            email=request.data['email']
+        ).password[2:-1].encode()
         current_pass = request.data['password'].encode()
+
         if bcrypt.checkpw(current_pass, hashed_pass):
-            authResponce = AuthResponce(user.payload_access, request)
-            return authResponce.response
-        return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
+            auth_responce = AuthResponce(
+                user.payload_access, request
+            )
+            return auth_responce.response
+
+        return Response(
+            {'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST
+        )
     except User.DoesNotExist:
-        return Response({'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': 'Auth failed'}, status.HTTP_400_BAD_REQUEST
+        )
 
 
 def get_current_user(request) -> User:
     token = request.headers['Authorization'].split(' ')[1]
-    dataToken = jwt.decode(token, settings.ACCESS_SECRET_KEY, algorithms='HS256')
-    currentUser = User.objects.get(email=dataToken['email'])
-    return currentUser
+    data_token = jwt.decode(
+        token, settings.ACCESS_SECRET_KEY, algorithms='HS256'
+    )
+    current_user = User.objects.get(
+        email=data_token['email']
+    )
+    return current_user

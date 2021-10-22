@@ -1,4 +1,4 @@
-fieldsDict = {
+fields_dict = {
     'compressor': [
         'user',
         'id',

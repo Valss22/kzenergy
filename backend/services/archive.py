@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from backend.data_fields import fieldsDict
+from backend.data_fields import fields_dict
 from backend.models import Archive
 
 
@@ -14,8 +14,8 @@ def get_percent_deviation(facility: str, field: str, curr_value: float):
             total += arch.__dict__['EPWorker'][facility][field]
 
         avg = total / len(archive)
-        onePer = avg / 100
-        return str(round((curr_value - avg) / onePer, 2))
+        one_per = avg / 100
+        return str(round((curr_value - avg) / one_per, 2))
 
     return None
 
@@ -28,17 +28,19 @@ def percent_deviation(facility: str, field: str, curr_value: float) -> dict:
 
 
 def get_percent_fields(facility_poll: {str: dict}) -> dict:
-    facilityPollPercent = {'compressor': {},
-                           'powerplant': {},
-                           'boiler': {}}
+    facility_poll_percent = {
+        'compressor': {},
+        'powerplant': {},
+        'boiler': {}
+    }
 
-    for fName in facility_poll.keys():
-        for key, value in facility_poll[fName].items():
-            facilityPollPercent[fName].update(
-                percent_deviation(fName, key, value)
+    for f_name in facility_poll.keys():
+        for key, value in facility_poll[f_name].items():
+            facility_poll_percent[f_name].update(
+                percent_deviation(f_name, key, value)
             )
 
-    return facilityPollPercent
+    return facility_poll_percent
 
 
 def get_archive(request):
@@ -56,7 +58,7 @@ def get_archive(request):
                 return data[role]
 
             data2 = {}
-            for i in fieldsDict[role]:
+            for i in fields_dict[role]:
                 data2[i] = data[role][i]
             return data2
 

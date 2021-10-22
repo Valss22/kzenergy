@@ -1,6 +1,8 @@
+from rest_framework import status
 from rest_framework.response import Response
 
-from backend.serializers import AvatarSerializer
+from backend.models import User
+from backend.serializers import AvatarSerializer, AllUsersSerializer
 from backend.services.auth import get_current_user
 
 from kzenergy.settings import PRE_URL
@@ -21,3 +23,20 @@ def update_phone(request):
     current_user.phone = changed_phone
     current_user.save()
     return Response({'phone': current_user.phone})
+
+
+def get_users(request, pk):
+    if pk:
+        try:
+            user = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'user does not exist'},
+                            status.HTTP_400_BAD_REQUEST)
+
+        serializer = AllUsersSerializer(user)
+        return Response(serializer.data)
+
+    current_user = get_current_user(request)
+    queryset = User.objects.exclude(email=current_user.email)
+    serializer = AllUsersSerializer(queryset, many=True)
+    return Response(serializer.data)

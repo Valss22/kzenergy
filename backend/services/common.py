@@ -5,11 +5,11 @@ from backend.services.auth import get_current_user
 
 
 def get_refusal_data(request) -> dict:
-    refusalData = {'text': request.data['text']}
+    refusal_data = {'text': request.data['text']}
     date = parse_date(str(datetime.datetime.now()))
-    refusalData['date'] = date
-    currentUser = get_current_user(request)
-    user = {'fullName': currentUser.fullName,
-            'id': currentUser.id}
-    refusalData['user'] = user
-    return refusalData
+    refusal_data['date'] = date
+    current_user = get_current_user(request)
+    user = {'fullName': current_user.fullName,
+            'id': current_user.id}
+    refusal_data['user'] = user
+    return refusal_data

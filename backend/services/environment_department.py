@@ -45,8 +45,8 @@ def update_formula(request):
 
 
 def get_data_for_excel() -> dict:
-    formulasDict = Formulas.objects.get().__dict__
-    gasDict = Gas.objects.get().__dict__
+    formulas_dict = Formulas.objects.get().__dict__
+    gas_dict = Gas.objects.get().__dict__
 
     comp = Compressor.objects.get()
     pp = PowerPlant.objects.get()
@@ -57,17 +57,17 @@ def get_data_for_excel() -> dict:
     Vboil = boil.gasConsumptionVolume
 
     volumes = {'comp': Vcomp, 'pp': Vpp, 'boil': Vboil}
-    density = gasDict['density']
+    density = gas_dict['density']
 
-    for key in formulasDict.copy().keys():
+    for key in formulas_dict.copy().keys():
         if 'coef' not in key:
-            del formulasDict[key]
+            del formulas_dict[key]
 
-    coeffs = formulasDict
+    coeffs = formulas_dict
 
-    lowerHeat = gasDict['LowerHeatCombustion']
+    lower_heat = gas_dict['LowerHeatCombustion']
 
-    energyData = {
+    energy_data = {
         'comp': {'hours': comp.workingHours,
                  'volumeOfInjected': comp.volumeOfInjectedGas},
         'pp': {'hours': pp.workingHours,
@@ -80,9 +80,9 @@ def get_data_for_excel() -> dict:
         'volumes': volumes,
         'density': density,
         'coeffs': coeffs,
-        'gas_dict': gasDict,
-        'lower_heat': lowerHeat,
-        'energy_data': energyData
+        'gas_dict': gas_dict,
+        'lower_heat': lower_heat,
+        'energy_data': energy_data
     }
 
 
@@ -92,15 +92,15 @@ def get_response_environment():
 
     if Archive.objects.all().exists():
         response.data = {'archive': archive.EPWorker}
-        facilityPoll: dict = {}
+        facility_poll: dict = {}
 
         for key, value in archive.EPWorker.items():
 
             if key in ['compressor', 'powerplant', 'boiler']:
-                facilityPoll.update({key: value})
+                facility_poll.update({key: value})
 
-        facPoll = get_percent_fields(facilityPoll)
-        for key, value in facPoll.items():
+        fac_poll = get_percent_fields(facility_poll)
+        for key, value in fac_poll.items():
             response.data['archive'][key].update(value)
 
     else:
@@ -118,26 +118,26 @@ def get_response_environment():
 
 
 def calculate_emission(request):
-    compObj = Compressor.objects.get()
-    comSer = CompSerArchive(compObj)
+    comp_obj = Compressor.objects.get()
+    com_ser = CompSerArchive(comp_obj)
 
-    ppObj = PowerPlant.objects.get()
-    ppSer = PPSerArchive(ppObj)
+    pp_obj = PowerPlant.objects.get()
+    pp_ser = PPSerArchive(pp_obj)
 
-    boilObj = Boiler.objects.get()
-    boilSer = BoilSerArchive(boilObj)
+    boil_obj = Boiler.objects.get()
+    boil_ser = BoilSerArchive(boil_obj)
 
-    formulasDict = Formulas.objects.get().__dict__
-    gasDict = Gas.objects.get().__dict__
+    formulas_dict = Formulas.objects.get().__dict__
+    gas_dict = Gas.objects.get().__dict__
 
     formulas = Formulas.objects.get()
 
     mining = {
         'user': {
             'fullName': formulas.user.fullName,
-            'id': formulasDict['user_id']
+            'id': formulas_dict['user_id']
         },
-        'date': parse_date(formulasDict['date']),
+        'date': parse_date(formulas_dict['date']),
     }
 
     comp = Compressor.objects.get()
@@ -148,63 +148,63 @@ def calculate_emission(request):
     Vpp = pp.gasConsumptionVolume
     Vboil = boil.gasConsumptionVolume
 
-    density = gasDict['density']
+    density = gas_dict['density']
 
     def facility_pollutants(volume) -> dict:
-        lowHeatCom = gasDict['LowerHeatCombustion']
+        lowHeatCom = gas_dict['LowerHeatCombustion']
         return {
             'NO2': parse_number(
-                round(formulasDict['NO2coef'] * density * volume * gasDict['nitrogen'], 2)),
+                round(formulas_dict['NO2coef'] * density * volume * gas_dict['nitrogen'], 2)),
             'NO': parse_number(
-                round(formulasDict['NOcoef'] * density * volume * gasDict['nitrogen'], 2)),
+                round(formulas_dict['NOcoef'] * density * volume * gas_dict['nitrogen'], 2)),
             'SO2': parse_number(
-                round(formulasDict['SO2coef'] * density * volume * gasDict['sulfur'], 2)),
+                round(formulas_dict['SO2coef'] * density * volume * gas_dict['sulfur'], 2)),
             'CO': parse_number(
-                round(formulasDict['COcoef'] * density * volume * gasDict['carbon'], 2)),
+                round(formulas_dict['COcoef'] * density * volume * gas_dict['carbon'], 2)),
             'CO2': parse_number(
-                round(gasDict['CO2EmissionFactor'] * formulasDict['CO2coef'] * density * volume * lowHeatCom, 2)),
+                round(gas_dict['CO2EmissionFactor'] * formulas_dict['CO2coef'] * density * volume * lowHeatCom, 2)),
             'CH4': parse_number(
-                round(gasDict['CH4SpecificFactor'] * formulasDict['CH4coef'] * density * volume * lowHeatCom, 2)),
+                round(gas_dict['CH4SpecificFactor'] * formulas_dict['CH4coef'] * density * volume * lowHeatCom, 2)),
             'N2O': parse_number(
-                round(gasDict['N2OSpecificFactor'] * formulasDict['N2Ocoef'] * density * volume * lowHeatCom, 2)),
+                round(gas_dict['N2OSpecificFactor'] * formulas_dict['N2Ocoef'] * density * volume * lowHeatCom, 2)),
         }
 
-    compPoll = facility_pollutants(Vcomp)
+    comp_poll = facility_pollutants(Vcomp)
 
-    ppPoll = facility_pollutants(Vpp)
+    pp_poll = facility_pollutants(Vpp)
 
-    boilPoll = facility_pollutants(Vboil)
+    boil_poll = facility_pollutants(Vboil)
 
-    compEnergy = round(Vcomp / comp.volumeOfInjectedGas, 2)
-    compPoll['energy'] = compEnergy
+    comp_energy = round(Vcomp / comp.volumeOfInjectedGas, 2)
+    comp_poll['energy'] = comp_energy
 
-    ppEnergy = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
-    ppPoll['energy'] = ppEnergy
+    pp_energy = round(pp.workingHours * Vpp / pp.generatedElectricity, 2)
+    pp_poll['energy'] = pp_energy
 
-    boilEnergy = round(Vboil / boil.steamVolume, 2)
-    boilPoll['energy'] = boilEnergy
+    boil_energy = round(Vboil / boil.steamVolume, 2)
+    boil_poll['energy'] = boil_energy
 
     def get_total_poll(facility):
-        totalEmis = round(sum([
+        total_emis = round(sum([
             facility['NO2'], facility['NO'],
             facility['SO2'], facility['CO']
         ]), 2)
-        facility['totalEmis'] = totalEmis
+        facility['totalEmis'] = total_emis
 
-        totalGrhs = round(sum([
+        total_grhs = round(sum([
             facility['CO2'], facility['CH4'],
             facility['N2O']
         ]), 2)
-        facility['totalGrhs'] = totalGrhs
+        facility['totalGrhs'] = total_grhs
 
-    get_total_poll(compPoll)
-    get_total_poll(ppPoll)
-    get_total_poll(boilPoll)
+    get_total_poll(comp_poll)
+    get_total_poll(pp_poll)
+    get_total_poll(boil_poll)
 
-    gasObj = Gas.objects.get()
-    gasSer = GasSerArchive(gasObj)
+    gas_obj = Gas.objects.get()
+    gas_ser = GasSerArchive(gas_obj)
 
-    currentUser = get_current_user(request)
+    current_user = get_current_user(request)
 
     import cloudinary.uploader
     create_excel(**get_data_for_excel())
@@ -213,21 +213,21 @@ def calculate_emission(request):
 
     environment = {
         'user': {
-            'fullName': currentUser.fullName,
-            'id': currentUser.id
+            'fullName': current_user.fullName,
+            'id': current_user.id
         },
         'date': parse_date(str(datetime.now())),
-        'compressor': compPoll,
-        'powerplant': ppPoll,
-        'boiler': boilPoll,
+        'compressor': comp_poll,
+        'powerplant': pp_poll,
+        'boiler': boil_poll,
         'excel': excel['secure_url']
     }
 
     Archive.objects.create(
-        compressor=comSer.data,
-        powerplant=ppSer.data,
-        boiler=boilSer.data,
-        chemical=gasSer.data,
+        compressor=com_ser.data,
+        powerplant=pp_ser.data,
+        boiler=boil_ser.data,
+        chemical=gas_ser.data,
         mining=mining,
         EPWorker=environment
     )
