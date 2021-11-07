@@ -144,3 +144,5 @@ dmypy.json
 
 # profiling data
 .prof
+
+kzenergy/settings.py
